@@ -1,0 +1,10 @@
+# OS junk
+.DS_Store
+Thumbs.db
+
+# If you later add a small server (e.g. for new features)
+node_modules/
+.env
+
+# Downloaded duplicates from the browser, if you don't want them tracked
+"jaguars-jumps-guide (*).html"

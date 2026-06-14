@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0B1A3A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Jaguars Jumps Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0B1A3A; --navy-2:#112A52; --navy-3:#1C3A6E;
+    --silver:#9AA3B2; --silver-light:#D8DDE5; --silver-bright:#EAF0F7;
+    --white:#FFFFFF; --bg:#F4F6FA; --card:#FFFFFF;
+    --ink:#0B1A3A; --ink-soft:#4A5468; --line:#E3E7EE;
+    --cue-tint:#EEF2F9; --fault:#B23A2E; --fault-tint:#FBEEEC;
+    --shadow:0 1px 2px rgba(11,26,58,.06),0 8px 24px rgba(11,26,58,.06);
+    --display:"Barlow Condensed",system-ui,sans-serif;
+    --body:"Inter",system-ui,sans-serif;
+    --mono:"Roboto Mono",ui-monospace,monospace;
+    --bar-h:64px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);
+    -webkit-font-smoothing:antialiased;line-height:1.5;
+    padding-bottom:calc(var(--bar-h) + env(safe-area-inset-bottom));}
+  .wrap{max-width:560px;margin:0 auto;}
+
+  /* ---------- Top app bar ---------- */
+  .appbar{position:sticky;top:0;z-index:40;background:var(--navy);color:var(--white);
+    padding:env(safe-area-inset-top) 0 0;box-shadow:0 1px 0 rgba(255,255,255,.04),0 6px 18px rgba(11,26,58,.18);}
+  .appbar-inner{max-width:560px;margin:0 auto;padding:12px 16px 0;}
+  .brand{display:flex;align-items:center;gap:10px;}
+  .paw{width:30px;height:30px;flex:0 0 auto;}
+  .wordmark{display:flex;flex-direction:column;line-height:1;}
+  .wordmark .school{font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--silver-light);}
+  .wordmark .title{font-family:var(--display);font-weight:700;font-size:24px;letter-spacing:.02em;text-transform:uppercase;color:var(--white);}
+  .title .accent{color:var(--silver);}
+  .editbtn{margin-left:auto;display:flex;align-items:center;gap:6px;background:transparent;border:1px solid rgba(255,255,255,.2);color:var(--silver-light);
+    font-family:var(--display);font-weight:600;font-size:13px;letter-spacing:.08em;text-transform:uppercase;padding:7px 11px;border-radius:9px;cursor:pointer;transition:.16s;}
+  .editbtn svg{width:15px;height:15px;}
+  .editbtn.on{background:var(--white);color:var(--navy);border-color:var(--white);}
+
+  .event-tabs{display:flex;gap:6px;padding:14px 0 12px;}
+  .event-tab{flex:1;border:1px solid rgba(255,255,255,.14);background:transparent;color:var(--silver-light);
+    font-family:var(--display);font-weight:600;font-size:17px;letter-spacing:.06em;text-transform:uppercase;padding:9px 4px;border-radius:10px;cursor:pointer;transition:.18s;}
+  .event-tab[aria-selected="true"]{background:var(--white);color:var(--navy);border-color:var(--white);}
+  .event-tabs.hidden{display:none;}
+
+  /* ---------- Views ---------- */
+  .view{display:none;} .view.active{display:block;animation:fade .28s ease both;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+  /* ---------- Hero trajectory ---------- */
+  .hero{background:linear-gradient(160deg,var(--navy) 0%,var(--navy-2) 100%);color:var(--white);padding:18px 16px 14px;}
+  .hero h2{font-family:var(--display);font-weight:700;font-size:30px;letter-spacing:.01em;text-transform:uppercase;margin:0 0 2px;}
+  .hero .lede{color:var(--silver-light);font-size:13.5px;margin:0 0 12px;max-width:38ch;}
+  .traj{width:100%;height:auto;display:block;}
+  .traj .ground{stroke:rgba(234,240,247,.22);stroke-width:1.5;}
+  .traj .pit{fill:rgba(234,240,247,.10);}
+  .traj .path{fill:none;stroke:var(--silver-bright);stroke-width:3;stroke-linecap:round;filter:drop-shadow(0 0 6px rgba(234,240,247,.45));}
+  .traj .node{fill:var(--navy);stroke:var(--silver);stroke-width:2.5;cursor:pointer;transition:.18s;}
+  .traj .node-hit{fill:transparent;cursor:pointer;}
+  .traj .node.active{fill:var(--white);stroke:var(--white);}
+  .traj .node-ring{fill:none;stroke:var(--white);stroke-width:1.5;opacity:0;}
+  .traj .nlabel{font-family:var(--display);font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;fill:var(--silver);}
+  .traj .nlabel.active{fill:var(--white);}
+  .traj .bar{stroke:var(--silver-bright);stroke-width:3;stroke-linecap:round;}
+  .traj .standard{fill:rgba(234,240,247,.5);}
+
+  /* ---------- Phase rail ---------- */
+  .rail-wrap{position:sticky;top:0;z-index:30;background:var(--bg);}
+  .rail{display:flex;gap:8px;overflow-x:auto;padding:12px 16px;scrollbar-width:none;-ms-overflow-style:none;}
+  .rail::-webkit-scrollbar{display:none;}
+  .chip{flex:0 0 auto;border:1px solid var(--line);background:var(--white);color:var(--ink-soft);
+    font-family:var(--display);font-weight:600;font-size:14px;letter-spacing:.04em;text-transform:uppercase;padding:7px 14px;border-radius:999px;cursor:pointer;transition:.16s;white-space:nowrap;}
+  .chip.active{background:var(--navy);color:var(--white);border-color:var(--navy);}
+  .phase-card{scroll-margin-top:66px;}
+
+  /* ---------- Cards ---------- */
+  .stack{padding:4px 16px 28px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 16px;margin:14px 0;box-shadow:var(--shadow);}
+  .eyebrow{font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--silver);margin:0 0 4px;}
+  .card h3{font-family:var(--display);font-weight:700;font-size:23px;letter-spacing:.01em;text-transform:uppercase;margin:0 0 6px;color:var(--navy);}
+  .summary{color:var(--ink-soft);font-size:14.5px;margin:0 0 14px;}
+
+  .measures{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px;}
+  .measure{background:var(--navy);color:var(--white);border-radius:10px;padding:7px 11px;display:flex;flex-direction:column;line-height:1.1;}
+  .measure .m-label{font-family:var(--display);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--silver-light);}
+  .measure .m-val{font-family:var(--mono);font-weight:600;font-size:15px;margin-top:2px;}
+
+  .block-label{font-family:var(--display);font-weight:600;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);margin:14px 0 7px;display:flex;align-items:center;gap:7px;}
+  .block-label .tick{width:14px;height:14px;flex:0 0 auto;}
+  ul.clean{list-style:none;margin:0;padding:0;}
+  ul.clean li{position:relative;padding:5px 0 5px 18px;font-size:14.5px;color:var(--ink);}
+  ul.clean li::before{content:"";position:absolute;left:2px;top:12px;width:6px;height:6px;border-radius:2px;background:var(--silver);}
+
+  .cues{background:var(--cue-tint);border:1px solid #DCE4F0;border-radius:12px;padding:12px 14px;margin:14px 0 2px;}
+  .cues .block-label{margin-top:0;color:var(--navy);}
+  ul.cuelist{list-style:none;margin:0;padding:0;}
+  ul.cuelist li{position:relative;padding:7px 0 7px 22px;font-size:15px;font-weight:600;color:var(--navy);}
+  ul.cuelist li::before{content:"";position:absolute;left:0;top:11px;width:9px;height:9px;border-radius:50%;border:2.5px solid var(--navy);}
+  .cuelist .said{display:block;font-weight:400;font-size:13px;color:var(--ink-soft);margin-top:1px;}
+
+  .faults li{color:var(--ink);} .faults li::before{background:var(--fault);}
+  .faults .fix{color:var(--ink-soft);} .faults .fix b{color:var(--fault);font-weight:600;}
+
+  /* ---------- Fundamentals ---------- */
+  .section-head{padding:18px 16px 2px;}
+  .section-head .eyebrow{color:var(--silver);}
+  .section-head h2{font-family:var(--display);font-weight:700;font-size:30px;text-transform:uppercase;letter-spacing:.01em;margin:0;}
+  .section-head p{color:var(--ink-soft);font-size:14.5px;margin:6px 0 0;}
+  .phase-row{display:flex;gap:13px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--line);}
+  .phase-row:last-child{border-bottom:0;}
+  .phase-num{flex:0 0 auto;width:34px;height:34px;border-radius:9px;background:var(--navy);color:var(--white);font-family:var(--display);font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;}
+  .phase-row h4{font-family:var(--display);font-weight:700;font-size:18px;text-transform:uppercase;letter-spacing:.02em;margin:2px 0 3px;color:var(--navy);}
+  .phase-row p{margin:0;font-size:14px;color:var(--ink-soft);}
+  .phase-row .cuein{color:var(--navy);font-weight:600;}
+
+  .check{margin:14px 0 2px;}
+  .check h3{font-family:var(--display);font-weight:700;font-size:18px;text-transform:uppercase;letter-spacing:.03em;color:var(--navy);margin:0 0 8px;}
+  .check-item{display:flex;gap:11px;align-items:center;padding:9px 0;border-bottom:1px dashed var(--line);font-size:14.5px;cursor:pointer;}
+  .check-item:last-child{border-bottom:0;}
+  .check-box{flex:0 0 auto;width:22px;height:22px;border-radius:7px;border:2px solid var(--silver);display:flex;align-items:center;justify-content:center;transition:.15s;}
+  .check-item.done .check-box{background:var(--navy);border-color:var(--navy);}
+  .check-box svg{opacity:0;transition:.15s;} .check-item.done .check-box svg{opacity:1;}
+  .check-item.done .ctext{color:var(--silver);text-decoration:line-through;}
+
+  /* ---------- Glossary ---------- */
+  .gl-group{margin:0 16px;}
+  .gl-group h3{font-family:var(--display);font-weight:700;font-size:16px;letter-spacing:.1em;text-transform:uppercase;color:var(--silver);margin:20px 0 6px;}
+  .gl-item{padding:11px 0;border-bottom:1px solid var(--line);position:relative;}
+  .gl-item:last-child{border-bottom:0;}
+  .gl-term{font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:.01em;color:var(--navy);text-transform:uppercase;}
+  .gl-def{font-size:14px;color:var(--ink-soft);margin-top:2px;}
+  .search{margin:14px 16px 0;position:relative;}
+  .search input{width:100%;padding:12px 14px 12px 40px;border:1px solid var(--line);border-radius:12px;font-family:var(--body);font-size:15px;background:var(--white);color:var(--ink);}
+  .search input:focus{outline:2px solid var(--navy-3);outline-offset:1px;border-color:transparent;}
+  .search svg{position:absolute;left:13px;top:13px;}
+
+  /* ---------- Bottom nav ---------- */
+  .botbar{position:fixed;left:0;right:0;bottom:0;z-index:50;background:var(--navy);padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -6px 18px rgba(11,26,58,.18);}
+  .botbar-inner{max-width:560px;margin:0 auto;display:flex;height:var(--bar-h);}
+  .nav-btn{flex:1;border:0;background:transparent;color:var(--silver);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    font-family:var(--display);font-weight:600;font-size:11px;letter-spacing:.08em;text-transform:uppercase;transition:.15s;}
+  .nav-btn svg{width:22px;height:22px;}
+  .nav-btn[aria-selected="true"]{color:var(--white);}
+
+  .footer-note{text-align:center;color:var(--silver);font-size:12px;padding:6px 24px 24px;}
+  .tip{margin:16px;background:var(--navy);color:var(--silver-light);border-radius:14px;padding:14px 16px;font-size:13px;}
+  .tip b{color:var(--white);font-family:var(--display);letter-spacing:.04em;text-transform:uppercase;display:block;margin-bottom:3px;font-size:13px;}
+
+  /* ---------- Sub-tabs + Drills ---------- */
+  .subtabs{display:flex;gap:6px;max-width:560px;margin:0 auto;padding:14px 16px 0;}
+  .subtab{flex:1;border:1px solid var(--line);background:var(--white);color:var(--ink-soft);font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:.05em;text-transform:uppercase;padding:9px;border-radius:10px;cursor:pointer;transition:.16s;}
+  .subtab.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .drills-intro{color:var(--ink-soft);font-size:13.5px;margin:6px 0 2px;}
+  .drill-card h3{margin-bottom:6px;}
+  .target-label{font-family:var(--display);font-weight:600;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--silver);display:block;margin:0 0 4px;}
+  .target-tag{display:inline-block;background:var(--cue-tint);border:1px solid #DCE4F0;color:var(--navy);font-family:var(--display);font-weight:600;font-size:13.5px;letter-spacing:.03em;text-transform:uppercase;padding:6px 12px;border-radius:999px;margin:0 0 12px;}
+  .drill-text{color:var(--ink-soft);font-size:14.5px;margin:0 0 6px;}
+
+  /* ---------- EDIT MODE ---------- */
+  body.editing [contenteditable="true"]{outline:1px dashed rgba(28,58,110,.55);outline-offset:3px;border-radius:4px;min-width:14px;display:inline-block;}
+  body.editing [contenteditable="true"]:focus{outline:2px solid var(--navy-3);background:#fff;box-shadow:0 0 0 4px rgba(28,58,110,.08);}
+  .ed-del{display:none;}
+  body.editing .ed-del{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;margin-left:7px;
+    border:0;border-radius:50%;background:var(--fault-tint);color:var(--fault);font-size:15px;line-height:1;cursor:pointer;vertical-align:middle;}
+  .ed-add{display:none;}
+  body.editing .ed-add{display:inline-block;margin-top:9px;background:transparent;border:1px dashed var(--navy-3);color:var(--navy-3);
+    font-family:var(--display);font-weight:600;font-size:13px;letter-spacing:.05em;text-transform:uppercase;padding:6px 12px;border-radius:8px;cursor:pointer;}
+  body.editing .gl-item{padding-right:30px;}
+  body.editing .gl-item .ed-del{position:absolute;right:0;top:11px;margin:0;}
+
+  .editbar{position:fixed;left:0;right:0;bottom:calc(var(--bar-h) + env(safe-area-inset-bottom));background:var(--navy);color:#fff;padding:11px 16px;display:none;z-index:45;box-shadow:0 -6px 18px rgba(11,26,58,.25);}
+  .editbar.show{display:block;}
+  .editbar-inner{max-width:560px;margin:0 auto;display:flex;align-items:center;gap:8px;}
+  .editbar .hint{font-size:12px;color:var(--silver-light);flex:1;line-height:1.3;}
+  .editbar button{flex:0 0 auto;font-family:var(--display);font-weight:600;font-size:13px;letter-spacing:.04em;text-transform:uppercase;padding:9px 12px;border-radius:9px;cursor:pointer;border:1px solid rgba(255,255,255,.25);background:transparent;color:#fff;}
+  .editbar button.primary{background:#fff;color:var(--navy);border-color:#fff;}
+
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+
+<header class="appbar">
+  <div class="appbar-inner">
+    <div class="brand">
+      <svg class="paw" viewBox="0 0 64 64" aria-hidden="true">
+        <ellipse cx="32" cy="42" rx="15" ry="12" fill="#EAF0F7"/>
+        <ellipse cx="16" cy="26" rx="6" ry="8" fill="#9AA3B2"/>
+        <ellipse cx="27" cy="18" rx="6" ry="8.5" fill="#EAF0F7"/>
+        <ellipse cx="40" cy="18" rx="6" ry="8.5" fill="#EAF0F7"/>
+        <ellipse cx="49" cy="26" rx="6" ry="8" fill="#9AA3B2"/>
+      </svg>
+      <div class="wordmark">
+        <span class="school">Jurupa Valley Jaguars</span>
+        <span class="title">Jumps <span class="accent">Guide</span></span>
+      </div>
+      <button class="editbtn" id="editBtn" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>
+        <span id="editBtnLabel">Edit</span>
+      </button>
+    </div>
+    <div class="event-tabs" id="eventTabs" role="tablist">
+      <button class="event-tab" role="tab" aria-selected="true" data-ev="long">Long</button>
+      <button class="event-tab" role="tab" aria-selected="false" data-ev="triple">Triple</button>
+      <button class="event-tab" role="tab" aria-selected="false" data-ev="high">High</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="view active" id="view-events">
+    <div id="eventHero"></div>
+    <div class="subtabs" id="subtabs">
+      <button class="subtab active" data-sub="technique">Technique</button>
+      <button class="subtab" data-sub="drills">Drills</button>
+    </div>
+    <div id="subTechnique">
+      <div class="rail-wrap"><div class="rail" id="phaseRail"></div></div>
+      <div class="stack" id="phaseStack"></div>
+      <div class="stack" style="padding-top:0" id="eventChecklist"></div>
+    </div>
+    <div id="subDrills" style="display:none">
+      <div class="stack" id="drillsStack"></div>
+    </div>
+  </section>
+
+  <section class="view" id="view-fundamentals">
+    <div class="section-head">
+      <p class="eyebrow">Every event starts here</p>
+      <h2>Fundamentals</h2>
+      <p>The approach language is the same for all three events. Master these and the rest is just what happens at the end of the runway.</p>
+    </div>
+    <div class="stack">
+      <div class="card">
+        <p class="eyebrow">The approach, start to finish</p>
+        <h3>Phases of the Run</h3>
+        <div id="fundPhases"></div>
+      </div>
+      <div class="card">
+        <p class="eyebrow">How we set you up</p>
+        <h3>Counting &amp; Marks</h3>
+        <p class="summary" id="counting"></p>
+        <div class="cues"><p class="block-label">Universal cues</p><ul class="cuelist" id="fundCues"></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="view" id="view-glossary">
+    <div class="section-head"><p class="eyebrow">Speak the same language</p><h2>Glossary</h2></div>
+    <div class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9AA3B2" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+      <input id="glSearch" type="search" placeholder="Search a term or cue…" autocomplete="off">
+    </div>
+    <div id="glossaryList"></div>
+    <div class="footer-note" id="glNone" style="display:none">No terms match that search.</div>
+  </section>
+</main>
+
+<div class="editbar" id="editbar">
+  <div class="editbar-inner">
+    <span class="hint">Edit mode — tap any text to change it. Use the + buttons to add cues or steps.</span>
+    <button class="primary" id="exportBtn">Download my version</button>
+    <button id="resetBtn">Reset</button>
+  </div>
+</div>
+
+<nav class="botbar">
+  <div class="botbar-inner" id="botbar">
+    <button class="nav-btn" aria-selected="true" data-view="events">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-7 4 5 3-4 6 8"/><circle cx="7" cy="6" r="2"/></svg>Events</button>
+    <button class="nav-btn" aria-selected="false" data-view="fundamentals">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Basics</button>
+    <button class="nav-btn" aria-selected="false" data-view="glossary">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 012-2h13v18H6a2 2 0 01-2-2z"/><path d="M8 7h7M8 11h7"/></svg>Glossary</button>
+  </div>
+</nav>
+
+<script>
+/* ============================================================
+   APP DATA  — edit-mode writes back here; export re-serializes this block.
+   ============================================================ */
+/*==DATA_START==*/
+let APP_DATA = {
+  "fundamentals": {
+    "counting": "We count your approach in rights and lefts — not total steps. Your start mark is set so the same foot hits the same spot every time. We'll also give you a check mark partway down the runway so you (and the coach watching) know your steps are on.",
+    "phases": [
+      {
+        "n": "1",
+        "name": "Drive Phase",
+        "desc": "First steps out of the back. Push the ground away with a forward lean and build force.",
+        "cue": "Stay low, push out."
+      },
+      {
+        "n": "2",
+        "name": "Rise Phase",
+        "desc": "Through the middle of the run you gradually come up to a tall, upright sprint posture.",
+        "cue": "Run tall, hips under shoulders."
+      },
+      {
+        "n": "3",
+        "name": "Attack Phase",
+        "desc": "The final 4–6 steps. Maintain your speed — do not gain it and do not reach for the mark.",
+        "cue": "Attack the board — don't reach for it."
+      },
+      {
+        "n": "4",
+        "name": "Penultimate(Long Jump Only)",
+        "desc": "The second-to-last step is slightly longer and lowers the hips to set up the takeoff.",
+        "cue": "Sink and load."
+      }
+    ],
+    "cues": [
+      {
+        "c": "Run tall",
+        "s": "Upright posture, hips under shoulders."
+      },
+      {
+        "c": "Peeking",
+        "s": "A late glance to adjust to the board or mark — but trust your approach."
+      },
+      {
+        "c": "Hit your check mark",
+        "s": "Your steps are repeatable when you're on your marks."
+      }
+    ]
+  },
+  "events": {
+    "long": {
+      "name": "Long Jump",
+      "traj": "long",
+      "lede": "Sprint, sink, punch, and ride one big arc into the pit. Speed through the board is everything.",
+      "phases": [
+        {
+          "id": "lj-app",
+          "chip": "Approach",
+          "name": "Approach",
+          "node": "Approach",
+          "summary": "Build through drive → rise → attack and carry that speed through the board. You're not slowing down to be accurate — you stay tall and trust your marks.",
+          "movement": [
+            "Drive out, rise to tall sprint posture, then attack the last 4–6 steps.",
+            "Maintain speed into the board — never decelerate to find it.",
+            "A little peeking late is fine; your marks do the work, trust them.",
+            "It is the Coach's Job to get you on your mark, it is YOUR Job to execute the approach.",
+            "Counted in rights and lefts off your marks."
+          ],
+          "cues": [
+            {
+              "c": "Run tall — Eyes Up",
+              "s": ""
+            },
+            {
+              "c": "Attack the board — don't reach for it",
+              "s": ""
+            }
+          ],
+          "faults": [
+            {
+              "p": "Reaching for the board",
+              "f": "Stay on your rhythm — your mark puts you there."
+            },
+            {
+              "p": "Slowing down to be accurate",
+              "f": "Trust your marks and keep your speed."
+            },
+            {
+              "p": "Eyes drop early",
+              "f": "Keep your eyes up and chest tall."
+            }
+          ],
+          "measures": []
+        },
+        {
+          "id": "lj-takeoff",
+          "chip": "Takeoff",
+          "name": "Penultimate & Takeoff",
+          "node": "Takeoff",
+          "summary": "Dorsiflex and brace your 2nd to last step with a flat foot contact to create the penultimate step, then plant your final step with a flat again and punch the free(driving) knee. This is where your max controllable speed becomes your lift due to the natural lowering of the hips from the penultimate.",
+          "movement": [
+            "Dorsiflex the foot and brace the leg — slightly longer step, hips lower naturally.",
+            "Plant flat, full foot on the board — quick and grounded, like a stamp.",
+            "Punch the knee: the free knee drives up and forward as you leave."
+          ],
+          "cues": [
+            {
+              "c": "Dorsiflex and Brace",
+              "s": "on the penultimate"
+            },
+            {
+              "c": "Allow the hips to naturally lower",
+              "s": "Do not force it"
+            },
+            {
+              "c": "Plant flat, full foot",
+              "s": "Last two steps"
+            },
+            {
+              "c": "Punch the knee",
+              "s": "with aggression"
+            }
+          ],
+          "faults": [
+            {
+              "p": "Heel-only plant that brakes you",
+              "f": "Land flat on the full foot."
+            },
+            {
+              "p": "Sinking too deep",
+              "f": "It's a small drop, not a squat."
+            },
+            {
+              "p": "Leaning back at takeoff",
+              "f": "Chest tall, eyes up."
+            }
+          ],
+          "measures": [
+            {
+              "l": "Takeoff angle",
+              "v": "18–22°"
+            }
+          ]
+        },
+        {
+          "id": "lj-flight",
+          "chip": "Flight",
+          "name": "Flight",
+          "node": "Flight",
+          "summary": "Get tall off the board first, then commit to your style. We use both — hang and hitch-kick — depending on the jumper.",
+          "movement": [
+            "Hang: stretch the body long — arms up, hips forward, free leg drops to meet the takeoff leg. You hold one long shape to delay rotation.",
+            "Hitch-kick (cycle): keep running in the air — continue the leg cycle to fight forward rotation.",
+            "Whichever you use, stay tall off the board first. Don't rush the legs down."
+          ],
+          "cues": [
+            {
+              "c": "Get tall, then commit",
+              "s": ""
+            },
+            {
+              "c": "Hang long",
+              "s": "or"
+            },
+            {
+              "c": "Cycle the legs and arms",
+              "s": ""
+            }
+          ],
+          "faults": [
+            {
+              "p": "Rushing into the flight shape",
+              "f": "Finish the takeoff first."
+            },
+            {
+              "p": "Dropping the legs too early",
+              "f": "Hold your shape, then prepare to land."
+            }
+          ],
+          "measures": []
+        },
+        {
+          "id": "lj-land",
+          "chip": "Landing",
+          "name": "Landing",
+          "node": "Landing",
+          "summary": "Shoot the feet out and fit through the window, then drive the hips through so you don't lose the distance you earned.",
+          "movement": [
+            "Shoot the feet / sweep the legs forward — heels reach through the window your hands set.",
+            "Don't sit back — reach the hands past the feet so the hips follow through.",
+            "Pull the sand and twist out to the side once you land."
+          ],
+          "cues": [
+            {
+              "c": "Fit through the window",
+              "s": ""
+            },
+            {
+              "c": "Don't sit or lean back",
+              "s": ""
+            },
+            {
+              "c": "Reach for the toes, Eyes Up",
+              "s": ""
+            }
+          ],
+          "faults": [
+            {
+              "p": "Sitting back into the pit",
+              "f": "Reach hands past your feet — drive the hips through."
+            },
+            {
+              "p": "Dropping the feet too early",
+              "f": "Hold flight, then shoot late."
+            }
+          ],
+          "measures": []
+        }
+      ],
+      "checklist": [
+        "Set and re-check your start mark",
+        "Run tall — attack the board, don't reach",
+        "Dorsiflex the foot and brace the leg, then plant flat and punch the knee",
+        "Get tall, then your flight shape (hang or cycle)",
+        "Shoot through the window — don't sit back"
+      ],
+      "drills": [
+        {
+          "name": "Full Approach Run-Throughs",
+          "targets": "Approach — rights/lefts & consistency",
+          "how": "Run your full approach on the runway or track with no jump, hitting your start mark and check mark while the coach watches your steps.",
+          "why": "Grooves a repeatable approach so you arrive on the board without reaching. Coach's job is to get you on your mark — yours is to execute it the same way every time."
+        },
+        {
+          "name": "Short-Approach Pop-Ups",
+          "targets": "Penultimate & Takeoff",
+          "how": "From a 4–6 step approach, hit the penultimate and take off up into the pit, exaggerating the dorsiflex-and-brace and the knee punch.",
+          "why": "Isolates the takeoff so you feel the hips lower naturally and the free knee punch with aggression, without a full sprint to manage."
+        },
+        {
+          "name": "A-Skips & Dorsiflexion Skips",
+          "targets": "Dorsiflex & brace — flat contact",
+          "how": "Skip with the toe pulled up (dorsiflexed) and a stiff, flat-foot strike landing under the hip.",
+          "why": "Builds the ankle stiffness for the braced, flat plant on the penultimate and the board."
+        },
+        {
+          "name": "Bounding / Single-Leg Bounds",
+          "targets": "Takeoff — power & knee drive",
+          "how": "Exaggerated bounds for distance, driving the free knee up and forward on every push.",
+          "why": "Develops the explosive knee punch and the power needed to convert speed into lift off the board."
+        },
+        {
+          "name": "Box / Elevated Takeoffs",
+          "targets": "Flight — hang or hitch-kick",
+          "how": "Take off from a short approach with extra airtime (low box or raised board) and hold your hang shape, or run the hitch-kick cycling the legs and arms.",
+          "why": "More hang time lets you rehearse your flight shape and timing before adding full speed."
+        },
+        {
+          "name": "Standing Long Jumps",
+          "targets": "Landing",
+          "how": "From a standstill, jump and shoot the feet through the window, reaching the hands toward the toes with eyes up — don't sit or lean back.",
+          "why": "Trains the landing shape and the reach so you don't give away distance in the sand."
+        }
+      ]
+    },
+    "triple": {
+      "name": "Triple Jump",
+      "traj": "triple",
+      "lede": "Hop, step, jump — three even, patient bounds. Speed beats Power. Rhythm beats Speed. Control beats Rhythm. Like skipping rocks on water.",
+      "phases": [
+        {
+          "id": "tj-app",
+          "chip": "Approach",
+          "name": "Approach",
+          "node": "Approach",
+          "summary": "Controlled and tall — you're setting up three phases, not blasting one big jump. Even rhythm starts in the run.",
+          "movement": [
+            "Drive → rise → attack, but a touch more controlled than long jump.",
+            "You want speed you can keep across all three phases, not speed you spend on the hop.",
+            "Counted in rights and lefts off your marks."
+          ],
+          "cues": [
+            {
+              "c": "Run tall",
+              "s": ""
+            },
+            {
+              "c": "Even rhythm — ta… ta… ta",
+              "s": ""
+            }
+          ],
+          "faults": [
+            {
+              "p": "Too fast and out of control into the board",
+              "f": "Speed you can carry across all three phases = Maximum Controlled Speed/Velocity"
+            },
+            {
+              "p": "Reaching at the board",
+              "f": "Stay on rhythm."
+            }
+          ],
+          "measures": []
+        },
+        {
+          "id": "tj-hop",
+          "chip": "Hop",
+          "name": "Hop",
+          "node": "Hop",
+          "summary": "Take off and land on the SAME foot. Cycle the leg through and paw it back under you for an active landing.",
+          "movement": [
+            "Same-foot takeoff and landing.",
+            "Cycle the leg — heel to butt, knee through, then paw the foot down and back under the hips.",
+            "Stay tall. Don't over-jump the hop — it's the first of three equal bounds."
+          ],
+          "cues": [
+            {
+              "c": "Cycle the leg",
+              "s": "heel to butt, knee through"
+            },
+            {
+              "c": "Flat, active landing",
+              "s": "paw it back"
+            },
+            {
+              "c": "Don't reach",
+              "s": ""
+            },
+            {
+              "c": "Good Posture -- Consistent hip height.",
+              "s": ""
+            },
+            {
+              "c": "Run off the board",
+              "s": ""
+            }
+          ],
+          "faults": [
+            {
+              "p": "Jumping too high or far on the hop",
+              "f": "Keep it even — save it for all three."
+            },
+            {
+              "p": "Landing the foot in front of the hips",
+              "f": "Paw it down and back under you."
+            }
+          ],
+          "measures": []
+        },
+        {
+          "id": "tj-step",
+          "chip": "Step",
+          "name": "Step",
+          "node": "Step",
+          "summary": "The patience phase — and the one most jumpers lose. Hold the step: stay long and balanced in the air before the opposite foot lands.",
+          "movement": [
+            "Land on the opposite foot from the hop.",
+            "Hold the step — thigh up and parallel, stay tall, stay patient in the air, good posture.",
+            "Same flat, active landing — paw it back under you.",
+            "Arms: we drill both single-arm and double-arm — use the action assigned to your rhythm."
+          ],
+          "cues": [
+            {
+              "c": "Hold the step",
+              "s": "stay patient, stay long"
+            },
+            {
+              "c": "Flat, active landing",
+              "s": ""
+            },
+            {
+              "c": "Don't reach",
+              "s": ""
+            },
+            {
+              "c": "Everything UP and Hold",
+              "s": ""
+            }
+          ],
+          "faults": [
+            {
+              "p": "Collapsing / cutting the step short",
+              "f": "Hold it — this is where distance lives."
+            },
+            {
+              "p": "Dropping the knee early",
+              "f": "Thigh parallel, tighten core, stay tall."
+            }
+          ],
+          "measures": []
+        },
+        {
+          "id": "tj-jump",
+          "chip": "Jump",
+          "name": "Jump",
+          "node": "Jump",
+          "summary": "The finish — basically a mini long jump into the pit. Big knee drive, then shoot the feet through the window.",
+          "movement": [
+            "Last takeoff into the pit — drive the knee and get tall.",
+            "Hang or a quick gather, then shoot the feet and fit through the window.",
+            "Don't sit back — drive the hips through the landing."
+          ],
+          "cues": [
+            {
+              "c": "Drive the knee",
+              "s": ""
+            },
+            {
+              "c": "Fit through the window",
+              "s": ""
+            },
+            {
+              "c": "Don't sit back",
+              "s": ""
+            },
+            {
+              "c": "Do not rush, finish the jump strong",
+              "s": ""
+            }
+          ],
+          "faults": [
+            {
+              "p": "Nothing left for the jump (uneven rhythm)",
+              "f": "Even bounds from the start give you a finish."
+            },
+            {
+              "p": "Reaching into the pit",
+              "f": "Shoot the feet, drive the hips through."
+            }
+          ],
+          "measures": []
+        }
+      ],
+      "checklist": [
+        "Set and re-check your start mark",
+        "Even rhythm — ta… ta… ta",
+        "Run tall, good posture, don't reach",
+        "Cycle the hop, paw it back under you",
+        "HOLD the step — stay patient",
+        "Finish: drive the knee into the pit"
+      ],
+      "drills": [
+        {
+          "name": "Standing Triple Jump",
+          "targets": "Rhythm & phase balance",
+          "how": "From a stand with no run, perform hop-step-jump into the pit, keeping all three phases even.",
+          "why": "Grooves the ta…ta…ta rhythm and even bounds before any speed is added — control first."
+        },
+        {
+          "name": "Rhythm Bounds (ta…ta…ta)",
+          "targets": "Even rhythm & control",
+          "how": "Bound across flat ground in your hop-step-jump pattern, listening for equal-sounding contacts.",
+          "why": "Builds maximum controlled speed and even rhythm. Speed beats power, rhythm beats speed, control beats rhythm."
+        },
+        {
+          "name": "Single-Leg Hops (same foot)",
+          "targets": "Hop — cycle the leg & active landing",
+          "how": "Continuous same-foot hops, cycling heel-to-butt and pawing the foot down and back under the hips.",
+          "why": "Trains the hop's cycle and a flat, active landing so you don't land out in front and brake."
+        },
+        {
+          "name": "\"Hold the Step\" Bounds",
+          "targets": "Step — patience & hold",
+          "how": "Alternating-leg bounds where you hang in each step, thigh up and parallel, as long as possible before landing.",
+          "why": "Attacks the most commonly lost phase — patience, good posture, and a long held step is where distance lives."
+        },
+        {
+          "name": "Short-Approach Triple into the Pit",
+          "targets": "Jump finish & linking phases",
+          "how": "From a 6–8 step approach, run the full hop-step-jump, focused on finishing the jump strong and not rushing.",
+          "why": "Connects all three phases under control and trains a strong, unhurried finish into the pit."
+        },
+        {
+          "name": "Tall-Posture March & Core Circuit",
+          "targets": "Posture — consistent hip height across phases",
+          "how": "March and bound emphasizing good posture and consistent hip height, then add core holds (planks, hollow holds).",
+          "why": "Keeps the hips from collapsing so every phase stays tall and balanced. Good posture = consistent hip height."
+        }
+      ]
+    },
+    "high": {
+      "name": "High Jump",
+      "traj": "high",
+      "lede": "Run the J, lean away from the bar, and let the curve lay you out. You jump up — the rotation does the rest.",
+      "phases": [
+        {
+          "id": "hj-app",
+          "chip": "J-Approach",
+          "name": "J-Approach",
+          "node": "Approach",
+          "summary": "The run is a J: a straight segment to build speed, then a curve into the bar. Counted in rights and lefts.",
+          "movement": [
+            "Run the straight portion tall and accelerating.",
+            "Speed is something you carry into the curve — keep building, don't coast.",
+            "Your marks set where the straight turns into the curve."
+          ],
+          "cues": [
+            {
+              "c": "Run tall",
+              "s": ""
+            },
+            {
+              "c": "Build through the straight",
+              "s": ""
+            }
+          ],
+          "faults": [
+            {
+              "p": "Starting the curve too early or late",
+              "f": "Hit your marks — the curve has a set spot."
+            },
+            {
+              "p": "Slowing as the curve starts",
+              "f": "Carry your speed in."
+            }
+          ],
+          "measures": []
+        },
+        {
+          "id": "hj-curve",
+          "chip": "Curve",
+          "name": "The Curve",
+          "node": "Curve",
+          "summary": "The final 4–5 steps on a curved path. The curve is what creates the rotation that lays you flat over the bar.",
+          "movement": [
+            "Run a smooth arc — like a sprinter on a bend.",
+            "Lean into the curve / lean away from the bar — let the body angle in, not break at the waist.",
+            "Stay tall through the lean. Maintain speed — don't gain it, don't drift toward the bar."
+          ],
+          "cues": [
+            {
+              "c": "Lean away from the bar",
+              "s": ""
+            },
+            {
+              "c": "Run tall through the curve",
+              "s": ""
+            }
+          ],
+          "faults": [
+            {
+              "p": "Standing straight up (no lean)",
+              "f": "Lean from the ankles, into the curve."
+            },
+            {
+              "p": "Breaking at the waist",
+              "f": "Stay tall — lean the whole body."
+            },
+            {
+              "p": "Drifting toward the bar",
+              "f": "Run your arc, hold your line."
+            }
+          ],
+          "measures": []
+        },
+        {
+          "id": "hj-plant",
+          "chip": "Plant",
+          "name": "Plant & Takeoff",
+          "node": "Plant",
+          "summary": "Plant pointed at the far standard and punch straight up. You take off up, not toward the bar — the curve turns your back to it.",
+          "movement": [
+            "Plant the takeoff foot pointed toward the far standard.",
+            "Drive the knee and arms up — an explosive vertical punch.",
+            "Stay tall and let the curve's rotation begin turning your back to the bar."
+          ],
+          "cues": [
+            {
+              "c": "Plant to the far standard",
+              "s": ""
+            },
+            {
+              "c": "Drive knee and arms up",
+              "s": ""
+            }
+          ],
+          "faults": [
+            {
+              "p": "Planting toward the bar",
+              "f": "Point the plant at the far standard — it protects your rotation."
+            },
+            {
+              "p": "Leaning into the bar at takeoff",
+              "f": "Jump up; let the curve lay you back."
+            },
+            {
+              "p": "No knee/arm drive",
+              "f": "Punch everything up."
+            }
+          ],
+          "measures": []
+        },
+        {
+          "id": "hj-clear",
+          "chip": "Clearance",
+          "name": "Bar Clearance",
+          "node": "Clearance",
+          "summary": "The back layout (flop). Push the hips to the sky, look back at the mat, then snap the legs clear.",
+          "movement": [
+            "Back layout over the bar — back arched, chest open.",
+            "Arch: push the hips to the sky.",
+            "Head back, look at the mat — that's what triggers the arch.",
+            "As the hips clear, heel kick — toes to nose — to flick the legs over, then land flat on your upper back."
+          ],
+          "cues": [
+            {
+              "c": "Push hips to the sky",
+              "s": ""
+            },
+            {
+              "c": "Head back, look at the mat",
+              "s": ""
+            },
+            {
+              "c": "Toes to nose",
+              "s": ""
+            }
+          ],
+          "faults": [
+            {
+              "p": "Sitting / piking on the bar",
+              "f": "Push the hips up, drop the head back."
+            },
+            {
+              "p": "Kicking the legs too early",
+              "f": "Wait until the hips clear, then toes to nose."
+            },
+            {
+              "p": "Looking at the bar",
+              "f": "Look back at the mat to trigger the arch."
+            }
+          ],
+          "measures": []
+        }
+      ],
+      "checklist": [
+        "Set and re-check both marks",
+        "Run the J tall, build through the straight",
+        "Lean away from the bar through the curve",
+        "Plant to the far standard — knee and arms up",
+        "Head back, push hips to the sky",
+        "Toes to nose, land flat on your back"
+      ],
+      "drills": [
+        {
+          "name": "Circle / Curve Runs",
+          "targets": "The Curve",
+          "how": "Run continuous laps around a circle or arc, leaning away from the center the same way you lean away from the bar.",
+          "why": "Teaches the inward lean and curve mechanics that create the rotation laying you out over the bar."
+        },
+        {
+          "name": "J-Approach Run-Throughs",
+          "targets": "J-Approach",
+          "how": "Run your full J with no jump, hitting your marks and building speed through the straight into the curve.",
+          "why": "Grooves a consistent J and your rights/lefts so the curve starts in exactly the right spot."
+        },
+        {
+          "name": "Short-Approach Pop-Ups",
+          "targets": "Plant & Takeoff",
+          "how": "From a few steps on the curve, plant toward the far standard and drive the knee and arms straight up, landing on the mat.",
+          "why": "Isolates a vertical plant and an up-driving takeoff without managing the full run."
+        },
+        {
+          "name": "Standing Back-Overs",
+          "targets": "Bar Clearance — the arch",
+          "how": "Stand with your back to the mat, jump up and back, push the hips to the sky and drop the head back to land flat on your upper back.",
+          "why": "Safely trains the arch and the head-back trigger that gets your hips over the bar."
+        },
+        {
+          "name": "Heel-Kick / Toes-to-Nose Drill",
+          "targets": "Clearance — leg action",
+          "how": "On the mat, practice snapping the legs up (toes to nose) the moment the hips have cleared.",
+          "why": "Times the leg flick so your heels don't drag and knock the bar on the way out."
+        },
+        {
+          "name": "Short-Approach Flops",
+          "targets": "Full clearance — integration",
+          "how": "Take a 5-step curved approach over a low bar or bungee, linking the curve, plant, and arch together.",
+          "why": "Puts the whole jump together at a manageable height before raising the bar."
+        }
+      ]
+    }
+  },
+  "glossary": [
+    {
+      "g": "Universal",
+      "items": [
+        [
+          "Approach run",
+          "The sprint into the jump."
+        ],
+        [
+          "Drive phase",
+          "First steps of the approach, pushing out at a forward lean."
+        ],
+        [
+          "Rise phase",
+          "Middle of the run, rising to upright sprint posture."
+        ],
+        [
+          "Attack phase",
+          "Final 4–6 steps, maintaining (not gaining) speed."
+        ],
+        [
+          "Penultimate step",
+          "Second-to-last step; slightly longer, lowers the hips."
+        ],
+        [
+          "Takeoff leg / plant leg",
+          "The leg that hits the board or ground last."
+        ],
+        [
+          "Free knee / drive knee",
+          "Opposite knee punching up at takeoff."
+        ],
+        [
+          "Run tall",
+          "Upright posture cue — hips under shoulders."
+        ],
+        [
+          "Peeking",
+          "Visually adjusting your steps to hit the board or mark."
+        ],
+        [
+          "Check mark",
+          "Reference point on the runway for step consistency."
+        ]
+      ]
+    },
+    {
+      "g": "Long Jump",
+      "items": [
+        [
+          "The board",
+          "The takeoff board."
+        ],
+        [
+          "Sink down",
+          "Sinking on the penultimate step."
+        ],
+        [
+          "Plant flat, full foot",
+          "The takeoff foot strike on the board."
+        ],
+        [
+          "Punch the knee",
+          "Free-knee drive at takeoff."
+        ],
+        [
+          "Takeoff angle",
+          "Roughly 18–22°."
+        ],
+        [
+          "Hang technique",
+          "Body extended long in flight."
+        ],
+        [
+          "Hitch-kick (cycle)",
+          "Running-in-air flight style."
+        ],
+        [
+          "Shoot the feet / sweep / fit through the window",
+          "Extending the legs forward for the landing."
+        ],
+        [
+          "Don't sit back / reach for the toes",
+          "Avoid falling backward in the pit."
+        ]
+      ]
+    },
+    {
+      "g": "Triple Jump",
+      "items": [
+        [
+          "Hop – Step – Jump",
+          "The three phases: same-foot, then opposite, then land."
+        ],
+        [
+          "Even rhythm",
+          "Equal-sounding phases — “ta… ta… ta,” not “TA-ta-ta.”"
+        ],
+        [
+          "Flat, active landing",
+          "Pawing the foot down and back under the hips."
+        ],
+        [
+          "Cycle the leg",
+          "Heel to butt, knee through, in the hop."
+        ],
+        [
+          "Single-arm vs. double-arm",
+          "Arm-action style through the phases."
+        ],
+        [
+          "Hold the step",
+          "Staying patient and long in the step phase (most common weakness)."
+        ],
+        [
+          "Don't reach",
+          "Avoid overstriding into each landing."
+        ]
+      ]
+    },
+    {
+      "g": "High Jump",
+      "items": [
+        [
+          "J-approach",
+          "Straight segment into a curve."
+        ],
+        [
+          "The curve",
+          "Final 4–5 steps; creates the rotation."
+        ],
+        [
+          "Lean into the curve / away from the bar",
+          "Body angle on the turn."
+        ],
+        [
+          "Plant",
+          "Final foot strike, pointed toward the far standard."
+        ],
+        [
+          "Drive knee and arms up",
+          "The vertical punch at takeoff."
+        ],
+        [
+          "Back layout / Flop",
+          "The bar-clearance position."
+        ],
+        [
+          "Arch",
+          "Hips up over the bar — “push the hips to the sky.”"
+        ],
+        [
+          "Heel kick / toes to nose",
+          "Flicking the legs clear after the hips pass."
+        ],
+        [
+          "Head back, look at the mat",
+          "Triggers the arch."
+        ]
+      ]
+    }
+  ]
+};
+/*==DATA_END==*/
+const ORIGINAL_JSON = JSON.stringify(APP_DATA);
+
+/* ============================================================
+   STATE + HELPERS
+   ============================================================ */
+let currentEvent = "long";
+let currentFilter = "";
+let editing = false;
+let currentSub = "technique";
+const STORAGE_KEY = "jaguars_jumps_guide_v1";
+const $ = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const getByPath = (root,p)=>p.split(".").reduce((o,k)=>o[k],root);
+function setByPath(root,p,v){const k=p.split(".");let o=root;for(let i=0;i<k.length-1;i++)o=o[k[i]];o[k[k.length-1]]=v;}
+
+const TPL = {
+  cue:()=>({c:"New cue",s:""}),
+  move:()=>"New coaching point",
+  fault:()=>({p:"New fault",f:"the fix"}),
+  check:()=>"New checklist item",
+  gloss:()=>["New term","What it means"],
+  fphase:()=>({n:"",name:"New phase",desc:"What happens here.",cue:"Cue"}),
+  fcue:()=>({c:"New cue",s:""}),
+  drill:()=>({name:"New drill",targets:"Phase / aspect it builds",how:"How to run it.",why:"What it develops and why it helps."})
+};
+
+/* editable markup helpers */
+function ce(path,text,cls=""){ // editable inline span
+  const attr = editing ? ` contenteditable="true" data-path="${path}" spellcheck="false"` : "";
+  return `<span class="${cls}"${attr}>${esc(text)}</span>`;
+}
+function ea(path){ return editing ? ` contenteditable="true" data-path="${path}" spellcheck="false"` : ""; }
+const del = (arrPath,idx)=> editing ? `<button class="ed-del" data-del="${arrPath}" data-idx="${idx}" aria-label="Delete">×</button>` : "";
+const add = (arrPath,tpl,label)=> editing ? `<button class="ed-add" data-add="${arrPath}" data-tpl="${tpl}">+ ${label}</button>` : "";
+
+const TICK = `<svg class="tick" viewBox="0 0 24 24" fill="none" stroke="#1C3A6E" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>`;
+const FLAG = `<svg class="tick" viewBox="0 0 24 24" fill="none" stroke="#B23A2E" stroke-width="2.6"><path d="M12 9v4M12 17h.01M10.3 4.5L3 17a2 2 0 001.7 3h14.6a2 2 0 001.7-3L13.7 4.5a2 2 0 00-3.4 0z"/></svg>`;
+const CHK = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>`;
+
+/* ============================================================
+   TRAJECTORY SVGs
+   ============================================================ */
+function nodeMarkup(x,y,label,id,active){
+  return `<g class="node-group" data-target="${id}">
+      <circle class="node ${active?'active':''}" data-node="${id}" cx="${x}" cy="${y}" r="6"/>
+      <circle class="node-ring" cx="${x}" cy="${y}" r="11" style="opacity:${active?1:0}"/>
+      <circle class="node-hit" cx="${x}" cy="${y}" r="18"/>
+      <text class="nlabel ${active?'active':''}" data-label="${id}" x="${x}" y="${y+26}" text-anchor="middle">${label}</text>
+    </g>`;
+}
+function buildTraj(ev){
+  const p = APP_DATA.events[ev].phases;
+  if(ev==="long"){
+    return `<svg class="traj" viewBox="0 0 400 170" role="img" aria-label="Long jump trajectory">
+      <line class="ground" x1="8" y1="132" x2="392" y2="132"/>
+      <rect class="pit" x="300" y="120" width="92" height="12" rx="3"/>
+      <path class="path" id="trajPath" d="M14 130 L70 126 L160 126 C200 60 240 40 250 42 C275 48 305 95 332 119"/>
+      ${nodeMarkup(75,124,"Approach",p[0].id,true)}${nodeMarkup(160,126,"Takeoff",p[1].id,false)}
+      ${nodeMarkup(250,42,"Flight",p[2].id,false)}${nodeMarkup(330,118,"Landing",p[3].id,false)}</svg>`;
+  }
+  if(ev==="triple"){
+    return `<svg class="traj" viewBox="0 0 400 170" role="img" aria-label="Triple jump trajectory">
+      <line class="ground" x1="8" y1="132" x2="392" y2="132"/>
+      <rect class="pit" x="320" y="120" width="72" height="12" rx="3"/>
+      <path class="path" id="trajPath" d="M14 130 L65 127 C90 80 120 80 150 128 C175 86 210 86 240 128 C272 60 300 55 355 119"/>
+      ${nodeMarkup(70,124,"Approach",p[0].id,true)}${nodeMarkup(107,80,"Hop",p[1].id,false)}
+      ${nodeMarkup(195,82,"Step",p[2].id,false)}${nodeMarkup(292,55,"Jump",p[3].id,false)}</svg>`;
+  }
+  return `<svg class="traj" viewBox="0 0 400 170" role="img" aria-label="High jump J-approach from above">
+    <rect class="pit" x="120" y="14" width="170" height="40" rx="5"/>
+    <rect class="standard" x="120" y="34" width="5" height="40"/><rect class="standard" x="285" y="34" width="5" height="40"/>
+    <line class="bar" x1="123" y1="40" x2="288" y2="40"/>
+    <path class="path" id="trajPath" d="M330 158 L320 110 C312 80 285 70 235 72"/>
+    <path d="M195 60 C205 40 230 40 240 60" fill="none" stroke="rgba(234,240,247,.55)" stroke-width="2.5" stroke-linecap="round"/>
+    ${nodeMarkup(326,134,"Approach",p[0].id,true)}${nodeMarkup(316,92,"Curve",p[1].id,false)}
+    ${nodeMarkup(236,72,"Plant",p[2].id,false)}${nodeMarkup(217,52,"Clear",p[3].id,false)}</svg>`;
+}
+
+/* ============================================================
+   RENDER: EVENTS
+   ============================================================ */
+function renderEvent(ev){
+  currentEvent = ev;
+  const data = APP_DATA.events[ev];
+  $("#eventHero").innerHTML = `<div class="hero">
+      <h2>${esc(data.name)}</h2>
+      <p class="lede"${ea(`events.${ev}.lede`)}>${esc(data.lede)}</p>
+      ${buildTraj(ev)}</div>`;
+  $("#phaseRail").innerHTML = data.phases.map((p,i)=>`<button class="chip ${i===0?'active':''}" data-chip="${p.id}">${esc(p.chip)}</button>`).join("");
+  $("#phaseStack").innerHTML = data.phases.map((p,i)=>cardMarkup(ev,p,i)).join("");
+  $("#eventChecklist").innerHTML = checklistMarkup(ev,data);
+  $("#drillsStack").innerHTML = drillsMarkup(ev,data);
+  animatePath(); wireTraj(); wireRail(); wireChecklist(); observePhases(); applySub();
+  window.scrollTo({top:0});
+}
+
+function cardMarkup(ev,p,i){
+  const base = `events.${ev}.phases.${i}`;
+  const measures = p.measures.length
+    ? `<div class="measures">${p.measures.map((m,j)=>`<div class="measure">
+        <span class="m-label"${ea(`${base}.measures.${j}.l`)}>${esc(m.l)}</span>
+        <span class="m-val"${ea(`${base}.measures.${j}.v`)}>${esc(m.v)}</span></div>`).join("")}</div>` : "";
+  const cues = `<div class="cues"><p class="block-label">Your cues</p>
+      <ul class="cuelist">${p.cues.map((c,j)=>`<li>${ce(`${base}.cues.${j}.c`,c.c)}${(c.s||editing)?`<span class="said">${ce(`${base}.cues.${j}.s`,c.s)}</span>`:""}${del(`${base}.cues`,j)}</li>`).join("")}</ul>
+      ${add(`${base}.cues`,"cue","Add cue")}</div>`;
+  const moves = `<p class="block-label">${TICK} The movement</p>
+      <ul class="clean">${p.movement.map((m,j)=>`<li>${ce(`${base}.movement.${j}`,m)}${del(`${base}.movement`,j)}</li>`).join("")}</ul>
+      ${add(`${base}.movement`,"move","Add point")}`;
+  const faults = `<p class="block-label">${FLAG} Watch out</p>
+      <ul class="clean faults">${p.faults.map((f,j)=>`<li>${ce(`${base}.faults.${j}.p`,f.p)} <span class="fix">→ <b>fix:</b> ${ce(`${base}.faults.${j}.f`,f.f)}</span>${del(`${base}.faults`,j)}</li>`).join("")}</ul>
+      ${add(`${base}.faults`,"fault","Add fault")}`;
+  return `<div class="card phase-card" id="${p.id}" data-phase="${p.id}">
+      <p class="eyebrow">Phase ${i+1} of ${APP_DATA.events[ev].phases.length}</p>
+      <h3>${esc(p.name)}</h3>
+      <p class="summary"${ea(`${base}.summary`)}>${esc(p.summary)}</p>
+      ${measures}${cues}${moves}${faults}</div>`;
+}
+
+function checklistMarkup(ev,data){
+  return `<div class="card check">
+      <p class="eyebrow">Before you compete</p>
+      <h3>${esc(data.name)} — Pre-Meet Checklist</h3>
+      <div id="clItems">${data.checklist.map((t,i)=>`<div class="check-item" data-i="${i}">
+          <span class="check-box">${CHK}</span>
+          <span class="ctext"${ea(`events.${ev}.checklist.${i}`)}>${esc(t)}</span>
+          ${del(`events.${ev}.checklist`,i)}</div>`).join("")}</div>
+      ${add(`events.${ev}.checklist`,"check","Add item")}
+    </div>
+    <div class="tip"><b>Save it to your phone</b>Tap your browser's Share button, then "Add to Home Screen" — it opens like an app, no signal needed once loaded.</div>`;
+}
+
+function drillsMarkup(ev,data){
+  const drills = data.drills || [];
+  let html = `<p class="eyebrow">${esc(data.name)} — Drills</p>
+    <p class="drills-intro">Each drill builds a specific phase or piece of the jump. The "Targets" tag tells you what it trains.</p>`;
+  html += drills.map((d,i)=>{
+    const base = `events.${ev}.drills.${i}`;
+    return `<div class="card drill-card">
+        <p class="eyebrow">Drill ${i+1}</p>
+        <h3${ea(`${base}.name`)}>${esc(d.name)}</h3>
+        <span class="target-label">Targets</span>
+        <span class="target-tag"${ea(`${base}.targets`)}>${esc(d.targets)}</span>
+        <p class="block-label">${TICK} How to run it</p>
+        <p class="drill-text"${ea(`${base}.how`)}>${esc(d.how)}</p>
+        <p class="block-label">Why it helps</p>
+        <p class="drill-text"${ea(`${base}.why`)}>${esc(d.why)}</p>
+        ${del(`events.${ev}.drills`,i)}
+      </div>`;
+  }).join("");
+  html += add(`events.${ev}.drills`,"drill","Add drill");
+  return html;
+}
+
+function applySub(){
+  $$(".subtab").forEach(b=>b.classList.toggle("active", b.dataset.sub===currentSub));
+  $("#subTechnique").style.display = currentSub==="technique" ? "" : "none";
+  $("#subDrills").style.display = currentSub==="drills" ? "" : "none";
+}
+function setSub(s){ currentSub=s; applySub(); window.scrollTo({top:0}); }
+$("#subtabs").addEventListener("click",e=>{ const b=e.target.closest(".subtab"); if(b) setSub(b.dataset.sub); });
+
+function animatePath(){
+  if(editing) return;
+  const path = $("#trajPath"); if(!path) return;
+  if(window.matchMedia("(prefers-reduced-motion:reduce)").matches) return;
+  const len = path.getTotalLength();
+  path.style.strokeDasharray = len; path.style.strokeDashoffset = len;
+  path.getBoundingClientRect();
+  path.style.transition = "stroke-dashoffset 1.1s ease";
+  requestAnimationFrame(()=>{ path.style.strokeDashoffset = 0; });
+}
+function setActivePhase(id){
+  $$(".chip").forEach(c=>c.classList.toggle("active", c.dataset.chip===id));
+  $$(".node").forEach(n=>n.classList.toggle("active", n.dataset.node===id));
+  $$(".nlabel").forEach(l=>l.classList.toggle("active", l.dataset.label===id));
+  $$(".node-ring").forEach(r=>{const s=r.previousElementSibling;r.style.opacity=(s&&s.dataset&&s.dataset.node===id)?1:0;});
+}
+function wireTraj(){ $$(".node-group").forEach(g=>g.addEventListener("click",()=>{const el=document.getElementById(g.dataset.target);if(el)el.scrollIntoView({behavior:"smooth",block:"start"});setActivePhase(g.dataset.target);})); }
+function wireRail(){ $$(".chip").forEach(c=>c.addEventListener("click",()=>{const el=document.getElementById(c.dataset.chip);if(el)el.scrollIntoView({behavior:"smooth",block:"start"});setActivePhase(c.dataset.chip);})); }
+function wireChecklist(){ $$("#clItems .check-item").forEach(it=>it.addEventListener("click",e=>{ if(editing) return; if(e.target.closest("[contenteditable]")||e.target.closest(".ed-del")) return; it.classList.toggle("done"); })); }
+let phaseObserver=null;
+function observePhases(){
+  if(phaseObserver) phaseObserver.disconnect();
+  phaseObserver = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ setActivePhase(e.target.dataset.phase); const chip=$(`.chip[data-chip="${e.target.dataset.phase}"]`); if(chip)chip.scrollIntoView({behavior:"smooth",inline:"center",block:"nearest"}); }}),{rootMargin:"-45% 0px -45% 0px",threshold:0});
+  $$(".phase-card").forEach(c=>phaseObserver.observe(c));
+}
+
+/* ============================================================
+   RENDER: FUNDAMENTALS + GLOSSARY
+   ============================================================ */
+function renderFundamentals(){
+  const f = APP_DATA.fundamentals;
+  $("#counting").setAttribute("data-na","");
+  $("#counting").innerHTML = esc(f.counting);
+  if(editing){ $("#counting").setAttribute("contenteditable","true"); $("#counting").setAttribute("data-path","fundamentals.counting"); $("#counting").setAttribute("spellcheck","false"); }
+  else { $("#counting").removeAttribute("contenteditable"); $("#counting").removeAttribute("data-path"); }
+  $("#fundPhases").innerHTML = f.phases.map((p,i)=>`<div class="phase-row">
+      <span class="phase-num">${esc(p.n)||(i+1)}</span>
+      <div><h4>${esc(p.name)}</h4>
+      <p>${ce(`fundamentals.phases.${i}.desc`,p.desc)} <span class="cuein">"${ce(`fundamentals.phases.${i}.cue`,p.cue)}"</span></p></div>
+      ${del("fundamentals.phases",i)}</div>`).join("") + add("fundamentals.phases","fphase","Add phase");
+  $("#fundCues").innerHTML = f.cues.map((c,i)=>`<li>${ce(`fundamentals.cues.${i}.c`,c.c)}<span class="said">${ce(`fundamentals.cues.${i}.s`,c.s)}</span>${del("fundamentals.cues",i)}</li>`).join("") + add("fundamentals.cues","fcue","Add cue");
+}
+function renderGlossary(filter=currentFilter){
+  currentFilter = filter;
+  const f = filter.trim().toLowerCase();
+  let any=false;
+  const html = APP_DATA.glossary.map((group,gi)=>{
+    const items = group.items.map((it,ii)=>({it,ii})).filter(({it})=> !f || it[0].toLowerCase().includes(f) || it[1].toLowerCase().includes(f));
+    if(!items.length && f) return "";
+    any=true;
+    return `<div class="gl-group"><h3>${esc(group.g)}</h3>${items.map(({it,ii})=>`<div class="gl-item">
+        <div class="gl-term">${ce(`glossary.${gi}.items.${ii}.0`,it[0])}</div>
+        <div class="gl-def">${ce(`glossary.${gi}.items.${ii}.1`,it[1])}</div>
+        ${del(`glossary.${gi}.items`,ii)}</div>`).join("")}${(!f)?add(`glossary.${gi}.items`,"gloss","Add term"):""}</div>`;
+  }).join("");
+  $("#glossaryList").innerHTML = html;
+  $("#glNone").style.display = (any||!f) ? "none" : "block";
+}
+
+/* ============================================================
+   EDIT MODE: write-back, add/remove, toggle, export, persist
+   ============================================================ */
+function refresh(){
+  const active = $(".view.active").id;
+  if(active==="view-events") renderEvent(currentEvent);
+  else if(active==="view-fundamentals") renderFundamentals();
+  else if(active==="view-glossary") renderGlossary();
+}
+function renderAll(){ renderEvent(currentEvent); renderFundamentals(); renderGlossary(); }
+
+document.body.addEventListener("input", e=>{
+  const el = e.target.closest("[data-path]"); if(!el) return;
+  setByPath(APP_DATA, el.dataset.path, el.innerText.replace(/\n/g," ").trim());
+  schedulePersist();
+});
+document.body.addEventListener("click", e=>{
+  const d = e.target.closest(".ed-del");
+  if(d){ e.preventDefault(); const arr=getByPath(APP_DATA,d.dataset.del); arr.splice(+d.dataset.idx,1); persistNow(); refresh(); return; }
+  const a = e.target.closest(".ed-add");
+  if(a){ e.preventDefault(); const arr=getByPath(APP_DATA,a.dataset.add); arr.push(TPL[a.dataset.tpl]()); persistNow(); refresh(); return; }
+});
+
+function setEditing(on){
+  editing = on;
+  document.body.classList.toggle("editing", on);
+  $("#editBtn").classList.toggle("on", on);
+  $("#editBtn").setAttribute("aria-pressed", String(on));
+  $("#editBtnLabel").textContent = on ? "Done" : "Edit";
+  $("#editbar").classList.toggle("show", on);
+  renderAll();
+}
+$("#editBtn").addEventListener("click", ()=>setEditing(!editing));
+
+/* persistence (best-effort; only works inside the Claude app) */
+let persistT;
+function schedulePersist(){ clearTimeout(persistT); persistT=setTimeout(persistNow,500); }
+async function persistNow(){ try{ if(window.storage) await window.storage.set(STORAGE_KEY, JSON.stringify(APP_DATA), false); }catch(e){} }
+async function loadSaved(){ try{ if(window.storage){ const r=await window.storage.get(STORAGE_KEY); if(r&&r.value) return JSON.parse(r.value); } }catch(e){} return null; }
+
+$("#resetBtn").addEventListener("click", async ()=>{
+  if(!confirm("Reset everything back to the original wording? Your edits will be cleared.")) return;
+  APP_DATA = JSON.parse(ORIGINAL_JSON);
+  try{ if(window.storage) await window.storage.delete(STORAGE_KEY); }catch(e){}
+  renderAll();
+});
+
+/* export a fresh standalone file with current wording baked in */
+$("#exportBtn").addEventListener("click", ()=>{
+  const wasEditing = editing;
+  const prevView = $(".view.active").id.replace("view-","");
+  const prevEvent = currentEvent;
+  const prevSub = currentSub;
+  // clean default state for a tidy export
+  setEditing(false);
+  selectEvent("long"); switchView("events"); setSub("technique");
+  const ids=["eventHero","phaseRail","phaseStack","eventChecklist","drillsStack","fundPhases","fundCues","counting","glossaryList"];
+  const saved={}; ids.forEach(id=>{const el=document.getElementById(id); if(el){saved[id]=el.innerHTML; el.innerHTML="";}});
+  let html = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+  ids.forEach(id=>{const el=document.getElementById(id); if(el && saved[id]!==undefined) el.innerHTML=saved[id];});
+  // restore the coach's working state
+  selectEvent(prevEvent); switchView(prevView); setSub(prevSub); if(wasEditing) setEditing(true);
+  // swap the DATA block for current wording
+  const literal = "let APP_DATA = " + JSON.stringify(APP_DATA, null, 2) + ";";
+  const replacement = "/*==DATA_START==*/\n"+literal+"\n/*==DATA_END==*/";
+  html = html.replace(/\/\*==DATA_START==\*\/[\s\S]*?\/\*==DATA_END==\*\//, ()=>replacement);
+  const blob = new Blob([html], {type:"text/html"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "jaguars-jumps-guide.html";
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(a.href);
+});
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+function switchView(v){
+  $$(".view").forEach(s=>s.classList.toggle("active", s.id===`view-${v}`));
+  $$(".nav-btn").forEach(b=>b.setAttribute("aria-selected", String(b.dataset.view===v)));
+  $("#eventTabs").classList.toggle("hidden", v!=="events");
+  window.scrollTo({top:0});
+}
+function selectEvent(ev){ $$(".event-tab").forEach(x=>x.setAttribute("aria-selected",String(x.dataset.ev===ev))); renderEvent(ev); }
+$("#botbar").addEventListener("click",e=>{ const b=e.target.closest(".nav-btn"); if(b) switchView(b.dataset.view); });
+$("#eventTabs").addEventListener("click",e=>{ const t=e.target.closest(".event-tab"); if(t) selectEvent(t.dataset.ev); });
+
+$("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
+
+/* ============================================================
+   INIT
+   ============================================================ */
+(async function init(){
+  const saved = await loadSaved();
+  if(saved && saved.events && saved.fundamentals) APP_DATA = saved;
+  renderAll();
+})();
+</script>
+</body>
+</html>
