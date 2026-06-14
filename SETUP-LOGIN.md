@@ -17,8 +17,10 @@ It's free, uses your existing Google account, and takes about 10 minutes once.
 
 1. Go to [sheets.new](https://sheets.new) to create a blank Google Sheet. Name it **Jaguars Jumps Logins**.
 2. At the bottom, you'll see one tab called `Sheet1`. **Rename it to `Roster`** (double-click the tab name).
-   - In `Roster`, put these headers in row 1: **First** in A1, **Last** in B1.
+   - In `Roster`, put these headers in row 1: **First** in A1, **Last** in B1, **Role** in C1.
    - From row 2 down, add each athlete — first name in column A, last name in column B.
+   - In **your own** row, type `admin` in column C (Role). Leave Role blank for athletes.
+     This is what makes the in-app **Edit** button appear only for you.
 3. Add a second tab (the **+** at the bottom-left), **name it `Log`**.
    - In `Log`, put these headers in row 1: **Time** in A1, **Name** in B1, **Device** in C1.
 
@@ -63,6 +65,10 @@ guide, push the change, and your login + logging goes live.
   ignores capitalization but not spelling.
 - **Changed the script later?** Re-deploy with **Deploy → Manage deployments → Edit → New version**
   so the URL stays the same.
+- **Coach-only Edit button:** the in-app **Edit** button only shows for people whose `Role`
+  is `admin` (or `coach`) in the Roster. Athletes never see it — and even if they did, the
+  Edit feature only changes their own local download, never the shared online guide.
+  After changing your Role, **sign out and back in** so the app picks it up.
 
 ## Good to know
 

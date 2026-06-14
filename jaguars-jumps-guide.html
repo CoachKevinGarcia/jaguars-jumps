@@ -44,6 +44,9 @@
     font-family:var(--display);font-weight:600;font-size:13px;letter-spacing:.08em;text-transform:uppercase;padding:7px 11px;border-radius:9px;cursor:pointer;transition:.16s;}
   .editbtn svg{width:15px;height:15px;}
   .editbtn.on{background:var(--white);color:var(--navy);border-color:var(--white);}
+  /* Edit button is coach-only — hidden unless the logged-in user is an admin */
+  #editBtn{display:none;}
+  body.admin-mode #editBtn{display:flex;}
 
   .event-tabs{display:flex;gap:6px;padding:14px 0 12px;}
   .event-tab{flex:1;border:1px solid rgba(255,255,255,.14);background:transparent;color:var(--silver-light);
@@ -1516,7 +1519,7 @@ $("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
 
   const readSession = () => { try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch(e){ return null; } };
   const validSession = () => { const s = readSession(); return s && s.exp > Date.now(); };
-  const saveSession = (name) => localStorage.setItem(KEY, JSON.stringify({ name, exp: Date.now() + SESSION_HOURS*3600*1000 }));
+  const saveSession = (name, admin) => localStorage.setItem(KEY, JSON.stringify({ name, admin: !!admin, exp: Date.now() + SESSION_HOURS*3600*1000 }));
 
   function showChip(name){
     let chip = document.getElementById('signoutChip');
@@ -1529,15 +1532,17 @@ $("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
     chip.textContent = 'Sign out · ' + name;
     chip.classList.remove('hidden');
   }
-  function openApp(name){
+  function openApp(name, admin){
     gate.classList.add('hidden');
     gate.setAttribute('aria-hidden','true');
+    document.body.classList.toggle('admin-mode', !!admin);
     showChip(name);
   }
   function signOut(){ localStorage.removeItem(KEY); location.reload(); }
 
   if(validSession()){
-    openApp(readSession().name);
+    const s = readSession();
+    openApp(s.name, s.admin);
   } else {
     setTimeout(() => fEl && fEl.focus(), 120);
   }
@@ -1552,7 +1557,7 @@ $("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
     // Setup mode (backend not connected yet): allow in, no logging.
     if(!configured){
       const name = first + ' ' + last;
-      saveSession(name); openApp(name); return;
+      saveSession(name, false); openApp(name, false); return;
     }
 
     try{
@@ -1564,7 +1569,7 @@ $("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
       const data = await res.json();
       if(data && data.ok){
         const name = data.name || (first + ' ' + last);
-        saveSession(name); openApp(name);
+        saveSession(name, data.admin); openApp(name, data.admin);
       } else {
         btn.disabled = false; btn.textContent = 'Enter';
         msg.textContent = 'That name isn’t on the roster — check spelling or ask Coach.';

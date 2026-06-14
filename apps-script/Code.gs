@@ -6,8 +6,11 @@
  * (name + date/time + device) on the Log tab.
  *
  * The Sheet needs two tabs (exact names):
- *   Roster  ->  row 1 headers: First | Last         (athlete names from row 2 down)
+ *   Roster  ->  row 1 headers: First | Last | Role   (athlete names from row 2 down)
  *   Log     ->  row 1 headers: Time | Name | Device  (the script fills these in)
+ *
+ * Role column (C) is optional. Put "admin" (or "coach") in your own row to make
+ * the in-app Edit button appear only for you. Blank = normal athlete.
  */
 
 const ROSTER_TAB = 'Roster';
@@ -23,9 +26,9 @@ function doPost(e) {
     const ss     = SpreadsheetApp.getActiveSpreadsheet();
     const roster = ss.getSheetByName(ROSTER_TAB);
     const rows   = Math.max(roster.getLastRow() - 1, 0);
-    const names  = rows ? roster.getRange(2, 1, rows, 2).getValues() : [];
+    const names  = rows ? roster.getRange(2, 1, rows, 3).getValues() : [];
 
-    let match = null;
+    let match = null, admin = false;
     for (const row of names) {
       const rf = String(row[0] || '').trim();
       const rl = String(row[1] || '').trim();
@@ -33,13 +36,15 @@ function doPost(e) {
           rf.toLowerCase() === first.toLowerCase() &&
           rl.toLowerCase() === last.toLowerCase()) {
         match = rf + ' ' + rl;   // canonical name, properly cased from the roster
+        const role = String(row[2] || '').trim().toLowerCase();
+        admin = (role === 'admin' || role === 'coach');
         break;
       }
     }
     if (!match) return json({ ok: false });
 
     ss.getSheetByName(LOG_TAB).appendRow([new Date(), match, String(body.ua || '')]);
-    return json({ ok: true, name: match });
+    return json({ ok: true, name: match, admin: admin });
   } catch (err) {
     return json({ ok: false, error: String(err) });
   }
