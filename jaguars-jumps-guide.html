@@ -184,9 +184,59 @@
   .editbar button.primary{background:#fff;color:var(--navy);border-color:#fff;}
 
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+
+  /* ---------- Team login gate ---------- */
+  #loginGate{position:fixed;inset:0;z-index:200;background:linear-gradient(160deg,var(--navy) 0%,var(--navy-2) 100%);
+    display:flex;align-items:center;justify-content:center;padding:24px;}
+  #loginGate.hidden{display:none;}
+  .login-card{width:100%;max-width:360px;text-align:center;color:var(--white);}
+  .login-card .paw{width:56px;height:56px;margin:0 auto 14px;display:block;}
+  .login-card .school{font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--silver-light);}
+  .login-card h1{font-family:var(--display);font-weight:700;font-size:30px;letter-spacing:.02em;text-transform:uppercase;margin:2px 0 4px;color:var(--white);}
+  .login-card h1 .accent{color:var(--silver);}
+  .login-card p.sub{color:var(--silver-light);font-size:14px;margin:0 0 22px;}
+  .login-form{display:flex;flex-direction:column;gap:12px;text-align:left;}
+  .login-form label{font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--silver);margin-bottom:-6px;}
+  .login-form input{font-family:var(--body);font-size:16px;padding:13px 14px;border-radius:11px;border:1px solid rgba(255,255,255,.18);
+    background:rgba(255,255,255,.06);color:var(--white);outline:none;transition:.16s;}
+  .login-form input:focus{border-color:var(--silver-light);background:rgba(255,255,255,.1);}
+  .login-form input::placeholder{color:rgba(255,255,255,.35);}
+  .login-btn{margin-top:6px;font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:.06em;text-transform:uppercase;
+    background:var(--white);color:var(--navy);border:none;padding:13px;border-radius:11px;cursor:pointer;transition:.16s;}
+  .login-btn:disabled{opacity:.55;cursor:default;}
+  .login-msg{min-height:18px;font-size:13px;margin-top:2px;color:#FFB4A8;}
+  .login-foot{margin-top:18px;font-size:12px;color:var(--silver);}
+  .signout-chip{position:fixed;right:12px;bottom:calc(var(--bar-h) + env(safe-area-inset-bottom) + 10px);z-index:45;
+    font-family:var(--display);font-weight:600;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+    background:var(--navy);color:var(--silver-light);border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:6px 11px;cursor:pointer;opacity:.85;}
+  .signout-chip.hidden{display:none;}
 </style>
 </head>
 <body>
+
+<div id="loginGate" aria-hidden="false">
+  <div class="login-card">
+    <svg class="paw" viewBox="0 0 64 64" aria-hidden="true">
+      <ellipse cx="32" cy="42" rx="15" ry="12" fill="#EAF0F7"/>
+      <ellipse cx="16" cy="26" rx="6" ry="8" fill="#9AA3B2"/>
+      <ellipse cx="27" cy="18" rx="6" ry="8.5" fill="#EAF0F7"/>
+      <ellipse cx="40" cy="18" rx="6" ry="8.5" fill="#EAF0F7"/>
+      <ellipse cx="49" cy="26" rx="6" ry="8" fill="#9AA3B2"/>
+    </svg>
+    <span class="school">Jurupa Valley Jaguars</span>
+    <h1>Jumps <span class="accent">Guide</span></h1>
+    <p class="sub">Team access — log in to continue.</p>
+    <form class="login-form" id="loginForm" autocomplete="off">
+      <label for="liFirst">Username — First name</label>
+      <input id="liFirst" name="first" type="text" placeholder="e.g. Juan" autocapitalize="words" autocorrect="off" required>
+      <label for="liLast">Password — Last name</label>
+      <input id="liLast" name="last" type="password" placeholder="Your last name" required>
+      <button class="login-btn" id="liBtn" type="submit">Enter</button>
+      <div class="login-msg" id="liMsg" role="alert"></div>
+    </form>
+    <p class="login-foot">Trouble getting in? Ask Coach Garcia.</p>
+  </div>
+</div>
 
 <header class="appbar">
   <div class="appbar-inner">
@@ -1444,6 +1494,86 @@ $("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
   const saved = await loadSaved();
   if(saved && saved.events && saved.fundamentals) APP_DATA = saved;
   renderAll();
+})();
+
+/* ============================================================
+   TEAM LOGIN GATE + login logging
+   ============================================================ */
+(function(){
+  // 🔧 SETUP: after deploying the Google Apps Script, paste its Web App URL
+  //    between the quotes below (replace the PASTE_... text).
+  const LOGIN_BACKEND = "https://script.google.com/macros/s/AKfycbxF416UVvqT4JkOH2H09vQYALz2c2N_5vjTCQXEzHeU-a0LeERJOUnLob0FplgzBD4Q/exec";
+  const SESSION_HOURS = 12;     // how long a login lasts before re-prompting
+  const KEY = "jjg_session";
+
+  const gate = document.getElementById('loginGate');
+  const form = document.getElementById('loginForm');
+  const fEl  = document.getElementById('liFirst');
+  const lEl  = document.getElementById('liLast');
+  const btn  = document.getElementById('liBtn');
+  const msg  = document.getElementById('liMsg');
+  const configured = LOGIN_BACKEND && !LOGIN_BACKEND.startsWith("PASTE_");
+
+  const readSession = () => { try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch(e){ return null; } };
+  const validSession = () => { const s = readSession(); return s && s.exp > Date.now(); };
+  const saveSession = (name) => localStorage.setItem(KEY, JSON.stringify({ name, exp: Date.now() + SESSION_HOURS*3600*1000 }));
+
+  function showChip(name){
+    let chip = document.getElementById('signoutChip');
+    if(!chip){
+      chip = document.createElement('button');
+      chip.id = 'signoutChip'; chip.className = 'signout-chip';
+      chip.addEventListener('click', signOut);
+      document.body.appendChild(chip);
+    }
+    chip.textContent = 'Sign out · ' + name;
+    chip.classList.remove('hidden');
+  }
+  function openApp(name){
+    gate.classList.add('hidden');
+    gate.setAttribute('aria-hidden','true');
+    showChip(name);
+  }
+  function signOut(){ localStorage.removeItem(KEY); location.reload(); }
+
+  if(validSession()){
+    openApp(readSession().name);
+  } else {
+    setTimeout(() => fEl && fEl.focus(), 120);
+  }
+
+  form && form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const first = (fEl.value || '').trim();
+    const last  = (lEl.value || '').trim();
+    if(!first || !last){ msg.textContent = 'Enter both your first and last name.'; return; }
+    msg.textContent = ''; btn.disabled = true; btn.textContent = 'Checking…';
+
+    // Setup mode (backend not connected yet): allow in, no logging.
+    if(!configured){
+      const name = first + ' ' + last;
+      saveSession(name); openApp(name); return;
+    }
+
+    try{
+      const res  = await fetch(LOGIN_BACKEND, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ first, last, ua: navigator.userAgent })
+      });
+      const data = await res.json();
+      if(data && data.ok){
+        const name = data.name || (first + ' ' + last);
+        saveSession(name); openApp(name);
+      } else {
+        btn.disabled = false; btn.textContent = 'Enter';
+        msg.textContent = 'That name isn’t on the roster — check spelling or ask Coach.';
+      }
+    } catch(err){
+      btn.disabled = false; btn.textContent = 'Enter';
+      msg.textContent = 'Network problem — check your connection and try again.';
+    }
+  });
 })();
 </script>
 </body>
