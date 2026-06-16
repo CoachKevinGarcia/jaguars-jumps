@@ -55,6 +55,34 @@ guide, push the change, and your login + logging goes live.
 
 ---
 
+## Step 5 — (Optional) Turn on the Home dashboard
+
+The Home tab shows each athlete their meets countdown, marks, goals, and notes. It reads
+from three optional tabs. Add the ones you want — skip any you don't, and that section just
+stays empty. **Athlete names must match the Roster** (`First Last`).
+
+**`Marks`** — one row per athlete + event. Row 1 headers:
+`Athlete | Event | PR | SB | Goal | Goal Note`
+- `Event` is `LJ`, `TJ`, or `HJ`.
+- Marks as you'd write them: `18-07.50` (feet-inches) or `5-04` for high jump.
+- `Goal` is optional — if it's a real mark, Home shows a progress bar toward it.
+
+**`Schedule`** — every meet. Row 1 headers: `Meet | Type | Date | Location`
+- `Type` examples: `Dual`, `Invitational`, `League Finals`. The app reads these words to
+  build the Dual / Invite / League Finals countdowns, and auto-picks the nearest meet for
+  "Next Up."
+- `Date` works best as `2027-04-29` (year-month-day).
+
+**`Notes`** — short messages. Row 1 headers: `Athlete | Note`
+- A row with an athlete's name = a private note shown only to them.
+- A row with `General` in the Athlete column = a team-wide announcement shown to everyone.
+
+> After adding these tabs (or changing the script), you must **redeploy a new version** so
+> the change goes live: **Deploy → Manage deployments → ✏️ Edit → Version: New version → Deploy.**
+> The `/exec` URL stays the same. Editing the *contents* of these tabs later needs no redeploy.
+
+---
+
 ## Day-to-day
 
 - **See who logged in:** open the Sheet → `Log` tab. Newest logins appear at the bottom,

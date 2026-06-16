@@ -188,6 +188,49 @@
 
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
 
+  /* ---------- Home dashboard ---------- */
+  .home-greet{padding:18px 16px 2px;}
+  .home-greet .hi{font-family:var(--display);font-weight:700;font-size:28px;letter-spacing:.01em;text-transform:uppercase;color:var(--ink);margin:0;}
+  .home-greet .sub{color:var(--ink-soft);font-size:13px;margin:2px 0 0;}
+  .nextmeet{margin:14px 16px 0;background:linear-gradient(160deg,var(--navy) 0%,var(--navy-2) 100%);color:#fff;border-radius:16px;padding:16px 18px;box-shadow:var(--shadow);}
+  .nextmeet .lbl{font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--silver-light);}
+  .nextmeet .nm-name{font-family:var(--display);font-weight:700;font-size:24px;text-transform:uppercase;letter-spacing:.01em;margin:2px 0;}
+  .nextmeet .nm-meta{color:var(--silver-light);font-size:13px;}
+  .nextmeet .nm-days{font-family:var(--mono);font-weight:600;font-size:34px;line-height:1;margin-top:10px;}
+  .nextmeet .nm-days small{font-family:var(--body);font-weight:500;font-size:13px;color:var(--silver-light);margin-left:7px;}
+  .cd-row{display:flex;gap:8px;margin:10px 16px 0;}
+  .cd-card{flex:1;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:10px 8px;text-align:center;box-shadow:var(--shadow);}
+  .cd-card .t{font-family:var(--display);font-weight:600;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);}
+  .cd-card .d{font-family:var(--mono);font-weight:600;font-size:22px;color:var(--ink);line-height:1.1;margin-top:3px;}
+  .cd-card .u{font-size:10px;color:var(--silver);text-transform:uppercase;letter-spacing:.06em;}
+  .home-h{font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);margin:22px 16px 8px;display:flex;align-items:center;gap:10px;}
+  .home-h::after{content:"";flex:1;height:1px;background:var(--line);}
+  .mark-card{margin:0 16px 8px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 15px;box-shadow:var(--shadow);}
+  .mark-ev{font-family:var(--display);font-weight:700;font-size:18px;text-transform:uppercase;color:var(--ink);}
+  .mark-vals{display:flex;gap:20px;margin-top:6px;}
+  .mark-val .k{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--silver);font-family:var(--display);font-weight:600;}
+  .mark-val .v{font-family:var(--mono);font-weight:600;font-size:20px;color:var(--ink);}
+  .mark-val .v.sb{color:var(--navy-3);}
+  .goal-wrap{margin-top:12px;}
+  .goal-line{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-soft);margin-bottom:5px;}
+  .goal-line b{color:var(--ink);font-family:var(--mono);}
+  .goal-track{height:8px;background:var(--cue-tint);border-radius:99px;overflow:hidden;}
+  .goal-fill{height:100%;background:linear-gradient(90deg,var(--navy-3),var(--navy));border-radius:99px;transition:width .5s ease;}
+  .goal-note{font-size:12.5px;color:var(--ink-soft);margin-top:8px;}
+  .note-card{margin:0 16px 8px;border-radius:14px;padding:13px 15px;box-shadow:var(--shadow);}
+  .note-card.coach{background:var(--cue-tint);border:1px solid var(--line);}
+  .note-card.general{background:linear-gradient(160deg,var(--navy) 0%,var(--navy-2) 100%);color:#fff;}
+  .note-card .nt-lbl{font-family:var(--display);font-weight:600;font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
+  .note-card.coach .nt-lbl{color:var(--navy-3);}
+  .note-card.general .nt-lbl{color:var(--silver-light);}
+  .note-card .nt-body{font-size:14px;line-height:1.45;}
+  .navgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 16px 4px;}
+  .navcard{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:13px 14px;text-align:left;cursor:pointer;box-shadow:var(--shadow);font-family:var(--display);font-weight:700;font-size:15px;text-transform:uppercase;letter-spacing:.02em;color:var(--ink);display:flex;align-items:center;gap:9px;transition:transform .12s;}
+  .navcard:active{transform:scale(.98);}
+  .navcard svg{width:19px;height:19px;color:var(--silver);flex:0 0 auto;}
+  .home-empty{margin:0 16px;color:var(--ink-soft);font-size:13.5px;background:var(--cue-tint);border:1px dashed var(--line);border-radius:12px;padding:12px 14px;}
+  .home-foot{height:24px;}
+
   /* ---------- Team login gate ---------- */
   #loginGate{position:fixed;inset:0;z-index:200;background:linear-gradient(160deg,var(--navy) 0%,var(--navy-2) 100%);
     display:flex;align-items:center;justify-content:center;padding:24px;}
@@ -237,7 +280,7 @@
       <button class="login-btn" id="liBtn" type="submit">Enter</button>
       <div class="login-msg" id="liMsg" role="alert"></div>
     </form>
-    <p class="login-foot">Trouble getting in? Ask Coach Garcia.</p>
+    <p class="login-foot">Trouble getting in? Ask Coach Kevin.</p>
   </div>
 </div>
 
@@ -260,7 +303,7 @@
         <span id="editBtnLabel">Edit</span>
       </button>
     </div>
-    <div class="event-tabs" id="eventTabs" role="tablist">
+    <div class="event-tabs hidden" id="eventTabs" role="tablist">
       <button class="event-tab" role="tab" aria-selected="true" data-ev="long">Long</button>
       <button class="event-tab" role="tab" aria-selected="false" data-ev="triple">Triple</button>
       <button class="event-tab" role="tab" aria-selected="false" data-ev="high">High</button>
@@ -269,7 +312,11 @@
 </header>
 
 <main class="wrap">
-  <section class="view active" id="view-events">
+  <section class="view active" id="view-home">
+    <div id="homeContent"></div>
+  </section>
+
+  <section class="view" id="view-events">
     <div id="eventHero"></div>
     <div class="subtabs" id="subtabs">
       <button class="subtab active" data-sub="technique">Technique</button>
@@ -327,7 +374,9 @@
 
 <nav class="botbar">
   <div class="botbar-inner" id="botbar">
-    <button class="nav-btn" aria-selected="true" data-view="events">
+    <button class="nav-btn" aria-selected="true" data-view="home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>Home</button>
+    <button class="nav-btn" aria-selected="false" data-view="events">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-7 4 5 3-4 6 8"/><circle cx="7" cy="6" r="2"/></svg>Events</button>
     <button class="nav-btn" aria-selected="false" data-view="fundamentals">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Basics</button>
@@ -1476,6 +1525,112 @@ $("#exportBtn").addEventListener("click", ()=>{
 });
 
 /* ============================================================
+   HOME DASHBOARD
+   ============================================================ */
+function hEvLabel(ev){ ev=String(ev||'').trim().toUpperCase(); return ({LJ:'Long Jump',TJ:'Triple Jump',HJ:'High Jump'})[ev] || ev; }
+function hParseDate(s){
+  if(!s) return null;
+  if(s instanceof Date) return isNaN(s)?null:s;
+  s=String(s).trim();
+  let d = /^\d{4}-\d{1,2}-\d{1,2}$/.test(s) ? new Date(s+'T00:00:00') : new Date(s);
+  return isNaN(d) ? null : d;
+}
+function hDaysUntil(s){ const d=hParseDate(s); if(!d) return null; const t=new Date(); t.setHours(0,0,0,0); d.setHours(0,0,0,0); return Math.round((d-t)/86400000); }
+function hFmtDate(s){ const d=hParseDate(s); return d ? d.toLocaleDateString(undefined,{month:'short',day:'numeric'}) : String(s||''); }
+function hToInches(s){
+  if(s==null) return null; s=String(s).trim(); if(!s) return null;
+  let m=s.match(/^(\d+)\s*[-'’]\s*(\d+(?:\.\d+)?)/);            // 18-07.50  or  18'6
+  if(m) return parseInt(m[1],10)*12 + parseFloat(m[2]);
+  m=s.match(/^(\d+(?:\.\d+)?)\s*m$/i);                          // 5.64m
+  if(m) return parseFloat(m[1])*39.3701;
+  m=s.match(/^(\d+(?:\.\d+)?)\s*(?:ft|')$/i);                   // 18ft
+  if(m) return parseFloat(m[1])*12;
+  return null;
+}
+function hInchesToFtIn(inch){
+  inch=Math.round(inch*100)/100; const ft=Math.floor(inch/12);
+  const rem=Math.round((inch-ft*12)*100)/100;
+  return ft<=0 ? rem+'"' : ft+"'"+rem+'"';
+}
+function renderHome(home, name){
+  const el=$("#homeContent"); if(!el) return;
+  home = home || {};
+  const first = (name||'').trim().split(/\s+/)[0] || 'Jaguar';
+  const marks = Array.isArray(home.marks) ? home.marks : [];
+  const schedule = Array.isArray(home.schedule) ? home.schedule : [];
+  const note = (home.note||'').trim();
+  const general = (home.general||'').trim();
+  let h = '';
+
+  h += `<div class="home-greet"><p class="hi">Welcome back, ${esc(first)}</p><p class="sub">Jurupa Valley Jaguars · Jumps</p></div>`;
+
+  const future = schedule.map(m=>({...m, days:hDaysUntil(m.date)}))
+                         .filter(m=>m.days!=null && m.days>=0)
+                         .sort((a,b)=>a.days-b.days);
+  const next = future[0];
+  if(next){
+    const d=next.days;
+    h += `<div class="nextmeet"><div class="lbl">Next Up</div><div class="nm-name">${esc(next.meet||'Meet')}</div>`
+      +  `<div class="nm-meta">${[esc(next.type||''), esc(next.location||''), hFmtDate(next.date)].filter(Boolean).join(' · ')}</div>`
+      +  `<div class="nm-days">${d===0?'Today':d}<small>${d===0?'':(d===1?'day to go':'days to go')}</small></div></div>`;
+  }
+  const find=(re)=>future.find(m=>re.test((m.type||'')+' '+(m.meet||'')));
+  const league=find(/league\s*final|finals/i), dual=find(/\bdual\b/i), invite=find(/invit/i);
+  const cds=[];
+  if(dual)   cds.push(['Next Dual', dual.days]);
+  if(invite) cds.push(['Next Invite', invite.days]);
+  if(league) cds.push(['League Finals', league.days]);
+  if(cds.length){
+    h += `<div class="cd-row">`+cds.map(c=>`<div class="cd-card"><div class="t">${c[0]}</div><div class="d">${c[1]===0?'Today':c[1]}</div><div class="u">${c[1]===0?'':(c[1]===1?'day':'days')}</div></div>`).join('')+`</div>`;
+  }
+  if(!next){ h += `<div class="home-h">Schedule</div><div class="home-empty">No upcoming meets on the schedule yet.</div>`; }
+
+  if(general){ h += `<div class="home-h">Team</div><div class="note-card general"><div class="nt-lbl">Announcement</div><div class="nt-body">${esc(general)}</div></div>`; }
+
+  h += `<div class="home-h">Your Marks</div>`;
+  if(marks.length){
+    marks.forEach(mk=>{
+      const pr=String(mk.pr||'').trim(), sb=String(mk.sb||'').trim(), goal=String(mk.goal||'').trim(), gnote=String(mk.goalNote||'').trim();
+      let c = `<div class="mark-card"><span class="mark-ev">${esc(hEvLabel(mk.event))}</span><div class="mark-vals">`
+        + `<div class="mark-val"><div class="k">PR</div><div class="v">${esc(pr||'—')}</div></div>`
+        + `<div class="mark-val"><div class="k">Season Best</div><div class="v sb">${esc(sb||'—')}</div></div>`
+        + (goal?`<div class="mark-val"><div class="k">Goal</div><div class="v">${esc(goal)}</div></div>`:'')
+        + `</div>`;
+      const gi=hToInches(goal), ci=hToInches(sb)||hToInches(pr);
+      if(gi && ci){
+        const pct=Math.max(0,Math.min(100,Math.round(ci/gi*100)));
+        const gap=gi-ci;
+        const gapTxt = gap<=0 ? 'Goal reached! 🎉' : hInchesToFtIn(gap)+' to your goal';
+        c += `<div class="goal-wrap"><div class="goal-line"><span>${gapTxt}</span><span><b>${pct}%</b></span></div>`
+          +  `<div class="goal-track"><div class="goal-fill" style="width:${pct}%"></div></div>`
+          +  (gnote?`<div class="goal-note">“${esc(gnote)}”</div>`:'')+`</div>`;
+      } else if(gnote){
+        c += `<div class="goal-note" style="margin-top:10px">“${esc(gnote)}”</div>`;
+      }
+      c += `</div>`;
+      h += c;
+    });
+  } else {
+    h += `<div class="home-empty">No marks logged yet — they'll show up here once Coach adds them.</div>`;
+  }
+
+  if(note){ h += `<div class="home-h">From Coach</div><div class="note-card coach"><div class="nt-lbl">Your Note</div><div class="nt-body">${esc(note)}</div></div>`; }
+
+  h += `<div class="home-h">Explore</div><div class="navgrid">`;
+  [['Long Jump','event:long'],['Triple Jump','event:triple'],['High Jump','event:high'],['Basics','view:fundamentals'],['Glossary','view:glossary']]
+    .forEach(n=>{ h += `<button class="navcard" data-go="${n[1]}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>${n[0]}</button>`; });
+  h += `</div><div class="home-foot"></div>`;
+
+  el.innerHTML = h;
+}
+$("#homeContent").addEventListener("click",e=>{
+  const b=e.target.closest("[data-go]"); if(!b) return;
+  const [k,v]=b.dataset.go.split(":");
+  if(k==="view"){ switchView(v); }
+  else if(k==="event"){ switchView("events"); selectEvent(v); }
+});
+
+/* ============================================================
    NAVIGATION
    ============================================================ */
 function switchView(v){
@@ -1519,7 +1674,7 @@ $("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
 
   const readSession = () => { try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch(e){ return null; } };
   const validSession = () => { const s = readSession(); return s && s.exp > Date.now(); };
-  const saveSession = (name, admin) => localStorage.setItem(KEY, JSON.stringify({ name, admin: !!admin, exp: Date.now() + SESSION_HOURS*3600*1000 }));
+  const saveSession = (name, admin, home) => localStorage.setItem(KEY, JSON.stringify({ name, admin: !!admin, home: home||null, exp: Date.now() + SESSION_HOURS*3600*1000 }));
 
   function showChip(name){
     let chip = document.getElementById('signoutChip');
@@ -1532,17 +1687,18 @@ $("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
     chip.textContent = 'Sign out · ' + name;
     chip.classList.remove('hidden');
   }
-  function openApp(name, admin){
+  function openApp(name, admin, home){
     gate.classList.add('hidden');
     gate.setAttribute('aria-hidden','true');
     document.body.classList.toggle('admin-mode', !!admin);
     showChip(name);
+    try { renderHome(home, name); } catch(e){}
   }
   function signOut(){ localStorage.removeItem(KEY); location.reload(); }
 
   if(validSession()){
     const s = readSession();
-    openApp(s.name, s.admin);
+    openApp(s.name, s.admin, s.home);
   } else {
     setTimeout(() => fEl && fEl.focus(), 120);
   }
@@ -1557,7 +1713,7 @@ $("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
     // Setup mode (backend not connected yet): allow in, no logging.
     if(!configured){
       const name = first + ' ' + last;
-      saveSession(name, false); openApp(name, false); return;
+      saveSession(name, false, null); openApp(name, false, null); return;
     }
 
     try{
@@ -1569,7 +1725,7 @@ $("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
       const data = await res.json();
       if(data && data.ok){
         const name = data.name || (first + ' ' + last);
-        saveSession(name, data.admin); openApp(name, data.admin);
+        saveSession(name, data.admin, data.home); openApp(name, data.admin, data.home);
       } else {
         btn.disabled = false; btn.textContent = 'Enter';
         msg.textContent = 'That name isn’t on the roster — check spelling or ask Coach.';
