@@ -1,7 +1,8 @@
 # Turning On the Home Dashboard — Full Walkthrough
 
-This is the hand-held version. Follow it top to bottom once and the Home tab
-(countdowns, PRs, goals, notes) goes live for your athletes.
+This is the hand-held version. Follow it top to bottom once and the **Home** tab
+(countdowns, PRs, goals, notes), the team **Leaderboard**, and your **Coach** dashboard
+all go live.
 
 - **Time:** about 15–20 minutes, once.
 - **What you need open:** your Google Sheet *"Jaguars Jumps Logins"* (the one with the
@@ -50,28 +51,39 @@ This is the step people miss. Saving is **not** enough — you must publish a ne
 
 ---
 
-## PART 3 — Add the three data tabs (~5 min + your data)
+## PART 3 — Set up your data tabs (~5 min + your data)
 
 Back in your **Google Sheet**. Tabs are the little named buttons along the bottom.
 Add a tab with the **+** at the bottom-left, then **double-click** the new tab's name to
 rename it. **Spelling and capitalization of the tab names must be exact.**
 
+> **Shortcut:** instead of building these by hand, download
+> **`Jaguars-Jumps-Home-Data.xlsx`** and **`Jaguars-Jumps-Roster.xlsx`** from your repo —
+> they already have every column and tab below, pre-filled from your roster. In your
+> *Jaguars Jumps Logins* sheet use **File → Import → Upload → Insert new sheet(s)**.
+
+### First: add a `Gender` column to your `Roster`
+The Leaderboard splits Boys / Girls, so your **existing `Roster` tab** needs a Gender column.
+
+1. On the `Roster` tab, put **`Gender`** in **cell D1** (next to your `Role` header in C1).
+2. In each athlete's row, type **`Boys`** or **`Girls`** in column D. Leave your own row blank.
+
 ### Tab 1: `Marks`
-This is each athlete's PRs, Season Bests, and goals — one row per athlete *per event*.
+Each athlete's PRs, Season Bests, goals, and a season-start baseline — one row per athlete *per event*.
 
-Put these **headers in row 1** (one per column, A through F):
+Put these **headers in row 1** (columns A through G):
 
-| A: Athlete | B: Event | C: PR | D: SB | E: Goal | F: Goal Note |
-|---|---|---|---|---|---|
+| A: Athlete | B: Event | C: PR | D: SB | E: Goal | F: Goal Note | G: Baseline |
+|---|---|---|---|---|---|---|
 
 Then fill rows from row 2 down. Example (replace with real marks):
 
-| Athlete | Event | PR | SB | Goal | Goal Note |
-|---|---|---|---|---|---|
-| Pablo Jara | LJ | 18-07.50 | 18-02.00 | 19-06 | Hold your penultimate. |
-| Pablo Jara | TJ | 40-02.00 | 38-11.00 | 42-00 | Patience in the step phase. |
-| Juan Ledesma | LJ | 20-01.00 | 19-08.00 | 21-00 | Tall through the board. |
-| Daniela Gamboa | LJ | 15-04.00 | 14-11.00 | 16-06 | Drive the knee up. |
+| Athlete | Event | PR | SB | Goal | Goal Note | Baseline |
+|---|---|---|---|---|---|---|
+| Pablo Jara | LJ | 18-07.50 | 18-02.00 | 19-06 | Hold your penultimate. | 18-03.00 |
+| Pablo Jara | TJ | 40-02.00 | 38-11.00 | 42-00 | Patience in the step phase. | 38-00.00 |
+| Juan Ledesma | LJ | 20-01.00 | 19-08.00 | 21-00 | Tall through the board. | 18-06.50 |
+| Daniela Gamboa | LJ | 15-04.00 | 14-11.00 | 16-06 | Drive the knee up. | 13-01.50 |
 
 Rules:
 - **Athlete** must match the `Roster` exactly as `First Last` (e.g., `Pablo Jara`).
@@ -81,6 +93,9 @@ Rules:
 - **Goal** is optional. If it's a real mark, Home shows a progress bar toward it. Leave it
   blank and the bar just won't appear.
 - **Goal Note** is your one-line coaching cue for that event (optional).
+- **Baseline** is their mark at the *start of the season* (use last season's best). It's what
+  the **Most Improved** leaderboard measures growth from. If you leave it blank, that athlete
+  just won't appear on the growth board.
 
 ### Tab 2: `Schedule`
 Every meet. The app reads this to build the countdowns and pick the nearest meet.
@@ -110,6 +125,26 @@ Short messages. Two kinds, same two columns.
 
 - A row with an **athlete's name** = a private note only that athlete sees on their Home.
 - A row with **`General`** in column A = a team-wide announcement everyone sees.
+
+### Tab 4: `Testables` (optional)
+Your block-end test results — they power the **Testables** board on the Leaderboard.
+
+**Headers in row 1:**
+
+| A: Athlete | B: Test | C: Result | D: Date |
+|---|---|---|---|
+
+| Athlete | Test | Result | Date |
+|---|---|---|---|
+| Juan Ledesma | Standing LJ | 9-02.00 | 2027-01-09 |
+| Pablo Jara | Standing LJ | 8-09.00 | 2027-01-09 |
+| Juan Ledesma | Flying 10 | 1.05 | 2027-01-09 |
+| Daniela Gamboa | Medball Back Toss | 28-00.00 | 2027-01-09 |
+
+- **Test** is the test name. Anything with "fly", "flying", or "sprint" in it is ranked
+  **fastest-first** (lower time wins); everything else is ranked **farthest-first**.
+- **Result** is feet-dash-inches for distances (`9-02.00`) or a plain number for times (`1.05`).
+- Add a new row each time you test — the board always shows each athlete's best.
 
 ---
 
@@ -147,8 +182,10 @@ Paste into the `Schedule` tab starting at **row 2** (under the headers).
 3. Log in as one of your athletes (their first + last name). You should land on **Home** and see:
    - their **Next Up** meet and the Dual / Invite / League Finals countdowns,
    - their **PR / Season Best / Goal** cards with progress bars,
-   - the **General** announcement and their **personal note**.
-4. Log in as **yourself** — you'll also see the **Edit** button (because your Roster `Role` is `admin`).
+   - the **General** announcement and their **personal note**,
+   - a **Ranks** tab with the team leaderboard (PR / Season Best / Most Improved / Testables).
+4. Log in as **yourself** — instead of Home you land on the **Coach** dashboard (team bests,
+   attention flags, everyone's goals, login activity), and you'll see the **Edit** button.
 
 ---
 
@@ -158,6 +195,12 @@ Paste into the `Schedule` tab starting at **row 2** (under the headers).
   **New version** (Part 2). Redo Part 2, then sign out and back in.
 - **An athlete's marks don't show.** The `Athlete` cell doesn't match the `Roster`. It must be
   `First Last`, spelled the same (capitalization is ignored, spelling and spacing are not).
+- **The Leaderboard is empty or everyone's in one list.** Add the **`Gender`** column to your
+  `Roster` (Boys / Girls) — the boards split by it.
+- **Nobody shows on Most Improved.** That board needs the **`Baseline`** column filled in `Marks`
+  *and* a Season Best to compare against.
+- **A testable ranks the wrong direction.** Times must have "fly"/"flying"/"sprint" in the test
+  name to rank fastest-first; otherwise it's treated as a distance (farthest-first).
 - **A countdown is missing.** Check the `Type` word (`Dual`, `Invitational`, `League Finals`)
   and that the `Date` is in the future and written like `2027-04-29`.
 - **A meet shows the wrong day.** Use the `2027-04-29` date format rather than `4/29/27`.
