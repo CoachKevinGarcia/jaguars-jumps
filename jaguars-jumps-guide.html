@@ -231,6 +231,47 @@
   .home-empty{margin:0 16px;color:var(--ink-soft);font-size:13.5px;background:var(--cue-tint);border:1px dashed var(--line);border-radius:12px;padding:12px 14px;}
   .home-foot{height:24px;}
 
+  /* ---------- Admin nav swap ---------- */
+  .nav-coach{display:none;}
+  body.admin-mode .nav-home{display:none;}
+  body.admin-mode .nav-coach{display:flex;}
+
+  /* ---------- Leaderboard ---------- */
+  .lb-head{padding:16px 16px 2px;}
+  .lb-head h2{font-family:var(--display);font-weight:700;font-size:26px;text-transform:uppercase;margin:0;color:var(--ink);}
+  .lb-head p{color:var(--ink-soft);font-size:13px;margin:2px 0 0;}
+  .lb-tabs{display:flex;gap:6px;overflow-x:auto;padding:12px 16px 4px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  .lb-tabs::-webkit-scrollbar{display:none;}
+  .lb-tab{flex:0 0 auto;border:1px solid var(--line);background:var(--card);color:var(--ink-soft);font-family:var(--display);font-weight:600;font-size:13px;letter-spacing:.04em;text-transform:uppercase;padding:8px 14px;border-radius:999px;cursor:pointer;}
+  .lb-tab.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .lb-sec{margin:14px 16px 0;}
+  .lb-sec-h{font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 8px;}
+  .lb-sec-h .ev{color:var(--navy-3);}
+  .lb-list{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);}
+  .lb-row{display:flex;align-items:center;gap:12px;padding:11px 14px;border-top:1px solid var(--line);}
+  .lb-row:first-child{border-top:0;}
+  .lb-row.me{background:var(--cue-tint);}
+  .lb-rk{font-family:var(--mono);font-weight:700;font-size:15px;width:24px;text-align:center;color:var(--silver);flex:0 0 auto;}
+  .lb-row.p1 .lb-rk{color:#C9A227;} .lb-row.p2 .lb-rk{color:#8A93A3;} .lb-row.p3 .lb-rk{color:#B06A3B;}
+  .lb-nm{flex:1;font-weight:600;font-size:14.5px;color:var(--ink);overflow:hidden;}
+  .lb-nm .you{font-family:var(--display);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--navy-3);margin-left:6px;}
+  .lb-sub{font-size:11px;color:var(--silver);font-weight:500;margin-left:6px;}
+  .lb-mk{font-family:var(--mono);font-weight:600;font-size:15px;color:var(--ink);flex:0 0 auto;}
+  .lb-mk.grow-up{color:#1F8A4C;}
+  .lb-empty{margin:14px 16px;color:var(--ink-soft);font-size:13px;background:var(--cue-tint);border:1px dashed var(--line);border-radius:12px;padding:12px 14px;}
+
+  /* ---------- Coach overview ---------- */
+  .coach-flag{margin:0 16px 8px;background:var(--fault-tint);border:1px solid #F2D5D0;border-radius:13px;padding:11px 14px;font-size:13px;color:#7A2A20;}
+  .coach-card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);margin:0 16px 8px;}
+  .coach-row{display:flex;align-items:center;gap:10px;padding:9px 14px;border-top:1px solid var(--line);}
+  .coach-row:first-child{border-top:0;}
+  .coach-nm{flex:1;font-weight:600;font-size:14px;color:var(--ink);}
+  .coach-meta{font-size:12px;color:var(--ink-soft);font-family:var(--mono);}
+  .coach-meta.coach-late{color:var(--fault);}
+  .coach-meta.coach-dim{color:var(--silver);}
+  .cg-bar{display:block;height:6px;background:var(--cue-tint);border-radius:99px;overflow:hidden;width:78px;flex:0 0 auto;}
+  .cg-fill{display:block;height:100%;background:linear-gradient(90deg,var(--navy-3),var(--navy));}
+
   /* ---------- Team login gate ---------- */
   #loginGate{position:fixed;inset:0;z-index:200;background:linear-gradient(160deg,var(--navy) 0%,var(--navy-2) 100%);
     display:flex;align-items:center;justify-content:center;padding:24px;}
@@ -362,6 +403,14 @@
     <div id="glossaryList"></div>
     <div class="footer-note" id="glNone" style="display:none">No terms match that search.</div>
   </section>
+
+  <section class="view" id="view-coach">
+    <div id="coachContent"></div>
+  </section>
+
+  <section class="view" id="view-leaderboard">
+    <div id="leaderContent"></div>
+  </section>
 </main>
 
 <div class="editbar" id="editbar">
@@ -374,14 +423,18 @@
 
 <nav class="botbar">
   <div class="botbar-inner" id="botbar">
-    <button class="nav-btn" aria-selected="true" data-view="home">
+    <button class="nav-btn nav-home" aria-selected="true" data-view="home">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>Home</button>
+    <button class="nav-btn nav-coach" aria-selected="false" data-view="coach">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg>Coach</button>
     <button class="nav-btn" aria-selected="false" data-view="events">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-7 4 5 3-4 6 8"/><circle cx="7" cy="6" r="2"/></svg>Events</button>
     <button class="nav-btn" aria-selected="false" data-view="fundamentals">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Basics</button>
     <button class="nav-btn" aria-selected="false" data-view="glossary">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 012-2h13v18H6a2 2 0 01-2-2z"/><path d="M8 7h7M8 11h7"/></svg>Glossary</button>
+    <button class="nav-btn" aria-selected="false" data-view="leaderboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20V10M12 20V4M18 20v-7"/></svg>Ranks</button>
   </div>
 </nav>
 
@@ -1631,6 +1684,146 @@ $("#homeContent").addEventListener("click",e=>{
 });
 
 /* ============================================================
+   LEADERBOARD + COACH OVERVIEW
+   ============================================================ */
+let BOARD_DATA = null, COACH_DATA = null, MY_NAME = '', LB_TAB = 'pr';
+
+function normGender(g){ g=String(g||'').trim().toLowerCase(); if(/^b|boy|male/.test(g)&&!/girl/.test(g)) return 'boys'; if(/^g|girl|female/.test(g)||/^f/.test(g)) return 'girls'; return ''; }
+function rankBy(items, valueFn, lowerBetter){
+  const s=items.map(it=>({...it, _v:valueFn(it)})).filter(it=>it._v!=null && !isNaN(it._v));
+  s.sort((a,b)=> lowerBetter ? a._v-b._v : b._v-a._v);
+  return s;
+}
+function isMe(name){ return String(name||'').toLowerCase()===MY_NAME.toLowerCase(); }
+function lbList(rows, fmt){
+  return `<div class="lb-list">`+rows.map((r,i)=>{
+    const pod=i===0?'p1':i===1?'p2':i===2?'p3':'';
+    return `<div class="lb-row ${pod} ${isMe(r.name)?'me':''}"><span class="lb-rk">${i+1}</span>`
+      +`<span class="lb-nm">${esc(r.name)}${r.sub?`<span class="lb-sub">${esc(r.sub)}</span>`:''}${isMe(r.name)?'<span class="you">You</span>':''}</span>`
+      +`<span class="lb-mk ${r.cls||''}">${fmt(r)}</span></div>`;
+  }).join('')+`</div>`;
+}
+function genderGroups(list){
+  const has=list.some(x=>normGender(x.gender));
+  return has ? [['boys','Boys'],['girls','Girls']] : [['all','All']];
+}
+function inGroup(gender, gk){ return gk==='all' ? true : normGender(gender)===gk; }
+
+function renderLeaderboard(){
+  const el=$("#leaderContent"); if(!el) return;
+  const board=BOARD_DATA||{athletes:[],testables:[]};
+  const athletes=board.athletes||[], testables=board.testables||[];
+  const tabs=[['pr','PR'],['sb','Season Best'],['growth','Most Improved'],['test','Testables']];
+  let h=`<div class="lb-head"><h2>Leaderboard</h2><p>Jaguar jumps — where you stack up.</p></div>`;
+  h+=`<div class="lb-tabs">`+tabs.map(t=>`<button class="lb-tab ${LB_TAB===t[0]?'active':''}" data-lb="${t[0]}">${t[1]}</button>`).join('')+`</div>`;
+
+  const events=[['LJ','Long Jump'],['TJ','Triple Jump'],['HJ','High Jump']];
+  let body='';
+
+  if(LB_TAB==='pr' || LB_TAB==='sb'){
+    const groups=genderGroups(athletes);
+    events.forEach(([ev,evName])=>{
+      groups.forEach(([gk,gName])=>{
+        const items=athletes.filter(a=>inGroup(a.gender,gk)).map(a=>{
+          const m=(a.marks||[]).find(x=>String(x.event).toUpperCase()===ev);
+          const raw=m?(LB_TAB==='sb'?m.sb:m.pr):''; return raw?{name:a.name, raw}:null;
+        }).filter(Boolean);
+        const rows=rankBy(items, it=>hToInches(it.raw), false);
+        if(rows.length) body+=`<div class="lb-sec"><div class="lb-sec-h">${gName} · <span class="ev">${evName}</span></div>`+lbList(rows, r=>esc(r.raw))+`</div>`;
+      });
+    });
+  } else if(LB_TAB==='growth'){
+    const groups=genderGroups(athletes);
+    groups.forEach(([gk,gName])=>{
+      const items=[];
+      athletes.filter(a=>inGroup(a.gender,gk)).forEach(a=>{
+        (a.marks||[]).forEach(m=>{
+          const base=hToInches(m.baseline), cur=hToInches(m.sb||m.pr);
+          if(base && cur && base>0){ items.push({name:a.name, _pct:(cur-base)/base*100, sub:`${m.event} ${m.baseline}→${m.sb||m.pr}`, cls:'grow-up'}); }
+        });
+      });
+      const rows=rankBy(items, it=>it._pct, false);
+      if(rows.length) body+=`<div class="lb-sec"><div class="lb-sec-h">${gName} · <span class="ev">Most Improved</span></div>`+lbList(rows, r=>`+${r._pct.toFixed(1)}%`)+`</div>`;
+    });
+  } else if(LB_TAB==='test'){
+    const tests=[...new Set(testables.map(t=>t.test))];
+    if(!tests.length){ body=`<div class="lb-empty">No testables logged yet. Add a <b>Testables</b> tab (Athlete · Test · Result · Date) and they'll rank here.</div>`; }
+    tests.forEach(test=>{
+      const lower=/fly|flying|sprint|dash|time|sec|10m|\b10\b/i.test(test);
+      const groups=genderGroups(testables);
+      groups.forEach(([gk,gName])=>{
+        const items=testables.filter(t=>t.test===test && inGroup(t.gender,gk)).map(t=>({name:t.athlete, raw:t.result}));
+        const rows=rankBy(items, it=>{ const inch=hToInches(it.raw); return inch!=null?inch:parseFloat(it.raw); }, lower);
+        if(rows.length) body+=`<div class="lb-sec"><div class="lb-sec-h">${gName} · <span class="ev">${esc(test)}</span></div>`+lbList(rows, r=>esc(r.raw))+`</div>`;
+      });
+    });
+  }
+  if(!body) body=`<div class="lb-empty">No marks to rank yet — they'll appear as Coach fills in the sheet.</div>`;
+  el.innerHTML=h+body+`<div class="home-foot"></div>`;
+}
+$("#leaderContent").addEventListener("click",e=>{ const b=e.target.closest("[data-lb]"); if(b){ LB_TAB=b.dataset.lb; renderLeaderboard(); } });
+
+function relTime(iso){ const d=Date.parse(iso); if(isNaN(d)) return ''; const s=(Date.now()-d)/1000; if(s<3600) return Math.max(1,Math.round(s/60))+'m ago'; if(s<86400) return Math.round(s/3600)+'h ago'; return Math.round(s/86400)+'d ago'; }
+
+function renderCoach(){
+  const el=$("#coachContent"); if(!el) return;
+  const board=BOARD_DATA||{athletes:[]}, coach=COACH_DATA||{goals:[],notes:[],activity:[]};
+  const athletes=board.athletes||[];
+  const goalMap={}; (coach.goals||[]).forEach(g=>{ goalMap[(g.athlete+'|'+g.event).toLowerCase()]=g; });
+  const lastMap={}; (coach.activity||[]).forEach(a=>{ lastMap[a.name.toLowerCase()]=a.lastSeen; });
+  const events=[['LJ','Long Jump'],['TJ','Triple Jump'],['HJ','High Jump']];
+
+  let h=`<div class="home-greet"><p class="hi">Coach Dashboard</p><p class="sub">Jurupa Valley Jaguars · Jumps</p></div>`;
+
+  let tb='';
+  events.forEach(([ev,evName])=>{
+    let best=null;
+    athletes.forEach(a=>{ const m=(a.marks||[]).find(x=>String(x.event).toUpperCase()===ev); if(m&&m.pr){ const v=hToInches(m.pr); if(v!=null&&(!best||v>best.v)) best={v,name:a.name,raw:m.pr}; } });
+    if(best) tb+=`<div class="cd-card"><div class="t">${evName}</div><div class="d" style="font-size:15px">${esc(best.raw)}</div><div class="u">${esc(best.name.split(' ')[0])}</div></div>`;
+  });
+  if(tb) h+=`<div class="home-h">Team Bests (PR)</div><div class="cd-row">${tb}</div>`;
+
+  const noMark=new Set(); const far=[];
+  athletes.forEach(a=>{
+    (a.marks||[]).forEach(m=>{
+      const g=goalMap[(a.name+'|'+m.event).toLowerCase()]; const goal=g?g.goal:'';
+      if(goal && !m.sb) noMark.add(a.name.split(' ')[0]+' '+m.event);
+      const gi=hToInches(goal), ci=hToInches(m.sb||m.pr);
+      if(gi&&ci) far.push({nm:a.name.split(' ')[0], ev:m.event, pct:ci/gi*100});
+    });
+  });
+  far.sort((x,y)=>x.pct-y.pct);
+  h+=`<div class="home-h">Needs Attention</div>`;
+  if(noMark.size) h+=`<div class="coach-flag"><b>No season mark yet:</b> ${esc([...noMark].join(', '))}</div>`;
+  if(far.length) h+=`<div class="coach-flag"><b>Furthest from goal:</b> ${esc(far.slice(0,3).map(x=>`${x.nm} ${x.ev} (${Math.round(x.pct)}%)`).join(', '))}</div>`;
+  if(!noMark.size && !far.length) h+=`<div class="home-empty">No flags right now — everyone's tracking.</div>`;
+
+  h+=`<div class="home-h">Goals · % to Goal</div>`;
+  let any=false;
+  [...athletes].sort((a,b)=>a.name.localeCompare(b.name)).forEach(a=>{
+    (a.marks||[]).forEach(m=>{
+      const g=goalMap[(a.name+'|'+m.event).toLowerCase()]; const goal=g?g.goal:''; if(!goal) return; any=true;
+      const gi=hToInches(goal), ci=hToInches(m.sb||m.pr);
+      const pct=(gi&&ci)?Math.max(0,Math.min(100,Math.round(ci/gi*100))):null;
+      h+=`<div class="coach-card"><div class="coach-row"><span class="coach-nm">${esc(a.name)} <span class="lb-sub">${esc(m.event)}</span></span>`
+        +`<span class="coach-meta">${esc(m.sb||m.pr||'—')} / ${esc(goal)}</span>`
+        +(pct!=null?`<span class="cg-bar"><span class="cg-fill" style="width:${pct}%"></span></span>`:'')+`</div></div>`;
+    });
+  });
+  if(!any) h+=`<div class="home-empty">No goals set yet — add them in the Marks tab.</div>`;
+
+  h+=`<div class="home-h">Login Activity</div>`;
+  const act=athletes.map(a=>({name:a.name, last:lastMap[a.name.toLowerCase()]||null}));
+  act.sort((x,y)=>(y.last?Date.parse(y.last):0)-(x.last?Date.parse(x.last):0));
+  h+=`<div class="coach-card">`+act.map(a=>{
+    const rel=a.last?relTime(a.last):'never logged in';
+    const late=!a.last||(Date.now()-Date.parse(a.last))>7*864e5;
+    return `<div class="coach-row"><span class="coach-nm">${esc(a.name)}</span><span class="coach-meta ${late?'coach-late':'coach-dim'}">${rel}</span></div>`;
+  }).join('')+`</div><div class="home-foot"></div>`;
+  el.innerHTML=h;
+}
+
+/* ============================================================
    NAVIGATION
    ============================================================ */
 function switchView(v){
@@ -1674,7 +1867,7 @@ $("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
 
   const readSession = () => { try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch(e){ return null; } };
   const validSession = () => { const s = readSession(); return s && s.exp > Date.now(); };
-  const saveSession = (name, admin, home) => localStorage.setItem(KEY, JSON.stringify({ name, admin: !!admin, home: home||null, exp: Date.now() + SESSION_HOURS*3600*1000 }));
+  const saveSession = (name, admin, home, board, coach) => localStorage.setItem(KEY, JSON.stringify({ name, admin: !!admin, home: home||null, board: board||null, coach: coach||null, exp: Date.now() + SESSION_HOURS*3600*1000 }));
 
   function showChip(name){
     let chip = document.getElementById('signoutChip');
@@ -1687,18 +1880,21 @@ $("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
     chip.textContent = 'Sign out · ' + name;
     chip.classList.remove('hidden');
   }
-  function openApp(name, admin, home){
+  function openApp(name, admin, home, board, coach){
     gate.classList.add('hidden');
     gate.setAttribute('aria-hidden','true');
     document.body.classList.toggle('admin-mode', !!admin);
     showChip(name);
+    MY_NAME = name; BOARD_DATA = board || null; COACH_DATA = coach || null;
     try { renderHome(home, name); } catch(e){}
+    try { renderLeaderboard(); } catch(e){}
+    if(admin){ try { renderCoach(); } catch(e){} switchView('coach'); }
   }
   function signOut(){ localStorage.removeItem(KEY); location.reload(); }
 
   if(validSession()){
     const s = readSession();
-    openApp(s.name, s.admin, s.home);
+    openApp(s.name, s.admin, s.home, s.board, s.coach);
   } else {
     setTimeout(() => fEl && fEl.focus(), 120);
   }
@@ -1713,7 +1909,7 @@ $("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
     // Setup mode (backend not connected yet): allow in, no logging.
     if(!configured){
       const name = first + ' ' + last;
-      saveSession(name, false, null); openApp(name, false, null); return;
+      saveSession(name, false, null, null, null); openApp(name, false, null, null, null); return;
     }
 
     try{
@@ -1725,7 +1921,8 @@ $("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
       const data = await res.json();
       if(data && data.ok){
         const name = data.name || (first + ' ' + last);
-        saveSession(name, data.admin, data.home); openApp(name, data.admin, data.home);
+        saveSession(name, data.admin, data.home, data.board, data.coach);
+        openApp(name, data.admin, data.home, data.board, data.coach);
       } else {
         btn.disabled = false; btn.textContent = 'Enter';
         msg.textContent = 'That name isn’t on the roster — check spelling or ask Coach.';
