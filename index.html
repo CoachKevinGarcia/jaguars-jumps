@@ -203,6 +203,8 @@
   .cd-card .t{font-family:var(--display);font-weight:600;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);}
   .cd-card .d{font-family:var(--mono);font-weight:600;font-size:22px;color:var(--ink);line-height:1.1;margin-top:3px;}
   .cd-card .u{font-size:10px;color:var(--silver);text-transform:uppercase;letter-spacing:.06em;}
+  .cd-card .cd-meet{font-weight:600;font-size:11.5px;color:var(--ink);margin-top:6px;line-height:1.2;}
+  .cd-card .cd-loc{font-size:10px;color:var(--silver);margin-top:1px;line-height:1.2;}
   .home-h{font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);margin:22px 16px 8px;display:flex;align-items:center;gap:10px;}
   .home-h::after{content:"";flex:1;height:1px;background:var(--line);}
   .mark-card{margin:0 16px 8px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 15px;box-shadow:var(--shadow);}
@@ -1620,11 +1622,19 @@ function meetCountdownsHTML(schedule){
   const find=(re)=>future.find(m=>re.test((m.type||'')+' '+(m.meet||'')));
   const league=find(/league\s*final|finals/i), dual=find(/\bdual\b/i), invite=find(/invit/i);
   const cds=[];
-  if(dual)   cds.push(['Next Dual', dual.days]);
-  if(invite) cds.push(['Next Invite', invite.days]);
-  if(league) cds.push(['League Finals', league.days]);
+  if(dual)   cds.push({label:'Next Dual',     m:dual});
+  if(invite) cds.push({label:'Next Invite',   m:invite});
+  if(league) cds.push({label:'League Finals', m:league});
   if(cds.length){
-    h += `<div class="cd-row">`+cds.map(c=>`<div class="cd-card"><div class="t">${c[0]}</div><div class="d">${c[1]===0?'Today':c[1]}</div><div class="u">${c[1]===0?'':(c[1]===1?'day':'days')}</div></div>`).join('')+`</div>`;
+    h += `<div class="cd-row">`+cds.map(c=>{
+      const d=c.m.days;
+      const nameDiff = c.m.meet && c.m.meet.trim().toLowerCase() !== c.label.replace(/^Next /,'').toLowerCase();
+      const meta=[hFmtDate(c.m.date), (c.m.location && c.m.location.toUpperCase()!=='TBD') ? c.m.location : ''].filter(Boolean).join(' · ');
+      return `<div class="cd-card"><div class="t">${c.label}</div><div class="d">${d===0?'Today':d}</div><div class="u">${d===0?'':(d===1?'day':'days')}</div>`
+        + (nameDiff ? `<div class="cd-meet">${esc(c.m.meet)}</div>` : '')
+        + (meta ? `<div class="cd-loc">${esc(meta)}</div>` : '')
+        + `</div>`;
+    }).join('')+`</div>`;
   }
   return { html: h, hasNext: !!next };
 }
