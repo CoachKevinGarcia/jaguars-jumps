@@ -1605,22 +1605,12 @@ function hInchesToFtIn(inch){
   const rem=Math.round((inch-ft*12)*100)/100;
   return ft<=0 ? rem+'"' : ft+"'"+rem+'"';
 }
-function renderHome(home, name){
-  const el=$("#homeContent"); if(!el) return;
-  home = home || {};
-  const first = (name||'').trim().split(/\s+/)[0] || 'Jaguar';
-  const marks = Array.isArray(home.marks) ? home.marks : [];
-  const schedule = Array.isArray(home.schedule) ? home.schedule : [];
-  const note = (home.note||'').trim();
-  const general = (home.general||'').trim();
-  let h = '';
-
-  h += `<div class="home-greet"><p class="hi">Welcome back, ${esc(first)}</p><p class="sub">Jurupa Valley Jaguars · Jumps</p></div>`;
-
-  const future = schedule.map(m=>({...m, days:hDaysUntil(m.date)}))
-                         .filter(m=>m.days!=null && m.days>=0)
-                         .sort((a,b)=>a.days-b.days);
+function meetCountdownsHTML(schedule){
+  const future = (schedule||[]).map(m=>({...m, days:hDaysUntil(m.date)}))
+                               .filter(m=>m.days!=null && m.days>=0)
+                               .sort((a,b)=>a.days-b.days);
   const next = future[0];
+  let h = '';
   if(next){
     const d=next.days;
     h += `<div class="nextmeet"><div class="lbl">Next Up</div><div class="nm-name">${esc(next.meet||'Meet')}</div>`
@@ -1636,7 +1626,24 @@ function renderHome(home, name){
   if(cds.length){
     h += `<div class="cd-row">`+cds.map(c=>`<div class="cd-card"><div class="t">${c[0]}</div><div class="d">${c[1]===0?'Today':c[1]}</div><div class="u">${c[1]===0?'':(c[1]===1?'day':'days')}</div></div>`).join('')+`</div>`;
   }
-  if(!next){ h += `<div class="home-h">Schedule</div><div class="home-empty">No upcoming meets on the schedule yet.</div>`; }
+  return { html: h, hasNext: !!next };
+}
+
+function renderHome(home, name){
+  const el=$("#homeContent"); if(!el) return;
+  home = home || {};
+  const first = (name||'').trim().split(/\s+/)[0] || 'Jaguar';
+  const marks = Array.isArray(home.marks) ? home.marks : [];
+  const schedule = Array.isArray(home.schedule) ? home.schedule : [];
+  const note = (home.note||'').trim();
+  const general = (home.general||'').trim();
+  let h = '';
+
+  h += `<div class="home-greet"><p class="hi">Welcome back, ${esc(first)}</p><p class="sub">Jurupa Valley Jaguars · Jumps</p></div>`;
+
+  const sched = meetCountdownsHTML(schedule);
+  h += sched.html;
+  if(!sched.hasNext){ h += `<div class="home-h">Schedule</div><div class="home-empty">No upcoming meets on the schedule yet.</div>`; }
 
   if(general){ h += `<div class="home-h">Team</div><div class="note-card general"><div class="nt-lbl">Announcement</div><div class="nt-body">${esc(general)}</div></div>`; }
 
@@ -1686,7 +1693,7 @@ $("#homeContent").addEventListener("click",e=>{
 /* ============================================================
    LEADERBOARD + COACH OVERVIEW
    ============================================================ */
-let BOARD_DATA = null, COACH_DATA = null, MY_NAME = '', LB_TAB = 'pr';
+let BOARD_DATA = null, COACH_DATA = null, HOME_DATA = null, MY_NAME = '', LB_TAB = 'pr';
 
 function normGender(g){ g=String(g||'').trim().toLowerCase(); if(/^b|boy|male/.test(g)&&!/girl/.test(g)) return 'boys'; if(/^g|girl|female/.test(g)||/^f/.test(g)) return 'girls'; return ''; }
 function rankBy(items, valueFn, lowerBetter){
@@ -1775,13 +1782,24 @@ function renderCoach(){
 
   let h=`<div class="home-greet"><p class="hi">Coach Dashboard</p><p class="sub">Jurupa Valley Jaguars · Jumps</p></div>`;
 
-  let tb='';
-  events.forEach(([ev,evName])=>{
-    let best=null;
-    athletes.forEach(a=>{ const m=(a.marks||[]).find(x=>String(x.event).toUpperCase()===ev); if(m&&m.pr){ const v=hToInches(m.pr); if(v!=null&&(!best||v>best.v)) best={v,name:a.name,raw:m.pr}; } });
-    if(best) tb+=`<div class="cd-card"><div class="t">${evName}</div><div class="d" style="font-size:15px">${esc(best.raw)}</div><div class="u">${esc(best.name.split(' ')[0])}</div></div>`;
+  // Meet countdowns (same as athlete Home) + team announcement
+  h += meetCountdownsHTML((HOME_DATA||{}).schedule || []).html;
+  const general = ((HOME_DATA||{}).general || '').trim();
+  if(general) h += `<div class="home-h">Team</div><div class="note-card general"><div class="nt-lbl">Announcement</div><div class="nt-body">${esc(general)}</div></div>`;
+
+  // Team bests, split by gender so the girls' marks aren't buried under the boys'
+  genderGroups(athletes).forEach(([gk,gName])=>{
+    let tb='';
+    events.forEach(([ev,evName])=>{
+      let best=null;
+      athletes.filter(a=>inGroup(a.gender,gk)).forEach(a=>{
+        const m=(a.marks||[]).find(x=>String(x.event).toUpperCase()===ev);
+        if(m&&m.pr){ const v=hToInches(m.pr); if(v!=null&&(!best||v>best.v)) best={v,name:a.name,raw:m.pr}; }
+      });
+      if(best) tb+=`<div class="cd-card"><div class="t">${evName}</div><div class="d" style="font-size:15px">${esc(best.raw)}</div><div class="u">${esc(best.name.split(' ')[0])}</div></div>`;
+    });
+    if(tb) h+=`<div class="home-h">${gk==='all'?'Team Bests (PR)':'Team Bests · '+gName+' (PR)'}</div><div class="cd-row">${tb}</div>`;
   });
-  if(tb) h+=`<div class="home-h">Team Bests (PR)</div><div class="cd-row">${tb}</div>`;
 
   const noMark=new Set(); const far=[];
   athletes.forEach(a=>{
@@ -1885,7 +1903,7 @@ $("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
     gate.setAttribute('aria-hidden','true');
     document.body.classList.toggle('admin-mode', !!admin);
     showChip(name);
-    MY_NAME = name; BOARD_DATA = board || null; COACH_DATA = coach || null;
+    MY_NAME = name; BOARD_DATA = board || null; COACH_DATA = coach || null; HOME_DATA = home || null;
     try { renderHome(home, name); } catch(e){}
     try { renderLeaderboard(); } catch(e){}
     if(admin){ try { renderCoach(); } catch(e){} switchView('coach'); }
