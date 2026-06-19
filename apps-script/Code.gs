@@ -17,7 +17,8 @@
  */
 
 const ROSTER_TAB = 'Roster', LOG_TAB = 'Log', MARKS_TAB = 'Marks',
-      SCHEDULE_TAB = 'Schedule', NOTES_TAB = 'Notes', TESTABLES_TAB = 'Testables';
+      SCHEDULE_TAB = 'Schedule', NOTES_TAB = 'Notes', TESTABLES_TAB = 'Testables',
+      PLAN_TAB = 'Plan';
 
 function doPost(e) {
   try {
@@ -47,7 +48,7 @@ function doPost(e) {
 
     ss.getSheetByName(LOG_TAB).appendRow([new Date(), match, String(body.ua || '')]);
 
-    const resp = { ok: true, name: match, admin: admin, home: buildHome(ss, match), board: buildBoard(ss) };
+    const resp = { ok: true, name: match, admin: admin, home: buildHome(ss, match), board: buildBoard(ss), plan: buildPlan(ss) };
     if (admin) resp.coach = buildCoach(ss);
     return json(resp);
   } catch (err) {
@@ -111,6 +112,21 @@ function buildBoard(ss) {
     .map(r => ({ athlete: String(r[0]||'').trim(), gender: g[String(r[0]||'').trim().toLowerCase()] || '',
                  test: String(r[1]||'').trim(), result: String(r[2]||'').trim(), date: _ymd(r[3], tz) }));
   return { athletes: Object.keys(byAth).map(k => byAth[k]), testables };
+}
+
+// Season practice plan — the blocks (everyone).
+function buildPlan(ss) {
+  const tz = ss.getSpreadsheetTimeZone();
+  return _read(ss, PLAN_TAB, 6)
+    .filter(r => String(r[0] || '').trim())
+    .map(r => ({
+      block: String(r[0] || '').trim(),
+      phase: String(r[1] || '').trim(),
+      start: _ymd(r[2], tz),
+      end:   _ymd(r[3], tz),
+      theme: String(r[4] || '').trim(),
+      focus: String(r[5] || '').trim()
+    }));
 }
 
 // Coach overview (admins only): goals, notes, and last-seen activity.

@@ -274,6 +274,36 @@
   .cg-bar{display:block;height:6px;background:var(--cue-tint);border-radius:99px;overflow:hidden;width:78px;flex:0 0 auto;}
   .cg-fill{display:block;height:100%;background:linear-gradient(90deg,var(--navy-3),var(--navy));}
 
+  /* ---------- This Block card ---------- */
+  .block-now{margin:14px 16px 0;background:linear-gradient(160deg,var(--navy-3) 0%,var(--navy) 100%);color:#fff;border-radius:16px;padding:15px 17px;box-shadow:var(--shadow);cursor:pointer;}
+  .block-now .lbl{font-family:var(--display);font-weight:600;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--silver-light);}
+  .block-now .bn-name{font-family:var(--display);font-weight:700;font-size:21px;text-transform:uppercase;letter-spacing:.01em;margin:2px 0;}
+  .block-now .bn-theme{color:var(--silver-light);font-size:13.5px;font-style:italic;}
+  .block-now .bn-go{margin-top:8px;font-family:var(--display);font-weight:600;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#fff;opacity:.85;}
+
+  /* ---------- Practice plan ---------- */
+  .pl-head{padding:16px 16px 2px;}
+  .pl-head h2{font-family:var(--display);font-weight:700;font-size:26px;text-transform:uppercase;margin:0;color:var(--ink);}
+  .pl-head p{color:var(--ink-soft);font-size:13px;margin:2px 0 0;}
+  .pl-phase{font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--navy-3);margin:20px 16px 8px;display:flex;align-items:center;gap:10px;}
+  .pl-phase::after{content:"";flex:1;height:1px;background:var(--line);}
+  .pl-block{margin:0 16px 8px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;}
+  .pl-block.now{border-color:var(--navy-3);box-shadow:0 0 0 2px rgba(28,58,110,.18),var(--shadow);}
+  .pl-block-top{display:flex;align-items:center;gap:10px;padding:13px 15px;cursor:pointer;}
+  .pl-block-top .pl-b{flex:1;}
+  .pl-bname{font-family:var(--display);font-weight:700;font-size:16px;text-transform:uppercase;color:var(--ink);}
+  .pl-bdates{font-size:12px;color:var(--silver);font-family:var(--mono);margin-top:1px;}
+  .pl-now-tag{font-family:var(--display);font-weight:700;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--navy-3);border-radius:999px;padding:3px 8px;flex:0 0 auto;}
+  .pl-caret{flex:0 0 auto;color:var(--silver);transition:transform .2s;}
+  .pl-block.open .pl-caret{transform:rotate(90deg);}
+  .pl-body{display:none;padding:0 15px 14px;}
+  .pl-block.open .pl-body{display:block;}
+  .pl-theme{font-size:14px;color:var(--ink);font-style:italic;margin:0 0 8px;}
+  .pl-focus{list-style:none;padding:0;margin:0;}
+  .pl-focus li{position:relative;padding-left:16px;font-size:13.5px;color:var(--ink-soft);line-height:1.45;margin-bottom:5px;}
+  .pl-focus li::before{content:"";position:absolute;left:2px;top:8px;width:5px;height:5px;border-radius:50%;background:var(--silver);}
+  .pl-empty{margin:14px 16px;color:var(--ink-soft);font-size:13.5px;background:var(--cue-tint);border:1px dashed var(--line);border-radius:12px;padding:12px 14px;}
+
   /* ---------- Team login gate ---------- */
   #loginGate{position:fixed;inset:0;z-index:200;background:linear-gradient(160deg,var(--navy) 0%,var(--navy-2) 100%);
     display:flex;align-items:center;justify-content:center;padding:24px;}
@@ -413,6 +443,10 @@
   <section class="view" id="view-leaderboard">
     <div id="leaderContent"></div>
   </section>
+
+  <section class="view" id="view-practice">
+    <div id="practiceContent"></div>
+  </section>
 </main>
 
 <div class="editbar" id="editbar">
@@ -429,6 +463,8 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>Home</button>
     <button class="nav-btn nav-coach" aria-selected="false" data-view="coach">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg>Coach</button>
+    <button class="nav-btn" aria-selected="false" data-view="practice">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4M16 2v4M3 9h18M5 4h14a2 2 0 012 2v13a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"/></svg>Plan</button>
     <button class="nav-btn" aria-selected="false" data-view="events">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-7 4 5 3-4 6 8"/><circle cx="7" cy="6" r="2"/></svg>Events</button>
     <button class="nav-btn" aria-selected="false" data-view="fundamentals">
@@ -1650,6 +1686,7 @@ function renderHome(home, name){
   let h = '';
 
   h += `<div class="home-greet"><p class="hi">Welcome back, ${esc(first)}</p><p class="sub">Jurupa Valley Jaguars · Jumps</p></div>`;
+  h += thisBlockCardHTML();
 
   const sched = meetCountdownsHTML(schedule);
   h += sched.html;
@@ -1791,6 +1828,7 @@ function renderCoach(){
   const events=[['LJ','Long Jump'],['TJ','Triple Jump'],['HJ','High Jump']];
 
   let h=`<div class="home-greet"><p class="hi">Coach Dashboard</p><p class="sub">Jurupa Valley Jaguars · Jumps</p></div>`;
+  h += thisBlockCardHTML();
 
   // Meet countdowns (same as athlete Home) + team announcement
   h += meetCountdownsHTML((HOME_DATA||{}).schedule || []).html;
@@ -1852,6 +1890,62 @@ function renderCoach(){
 }
 
 /* ============================================================
+   PRACTICE PLAN
+   ============================================================ */
+let PLAN_DATA = null;
+
+function currentBlockIdx(plan){
+  if(!Array.isArray(plan)) return -1;
+  const t=new Date(); t.setHours(0,0,0,0);
+  for(let i=0;i<plan.length;i++){
+    const s=hParseDate(plan[i].start), e=hParseDate(plan[i].end);
+    if(s&&e){ s.setHours(0,0,0,0); e.setHours(0,0,0,0); if(t>=s && t<=e) return i; }
+  }
+  return -1;
+}
+function nextBlockIdx(plan){
+  if(!Array.isArray(plan)) return -1;
+  const t=new Date(); t.setHours(0,0,0,0);
+  for(let i=0;i<plan.length;i++){ const s=hParseDate(plan[i].start); if(s){ s.setHours(0,0,0,0); if(s>t) return i; } }
+  return -1;
+}
+function focusLines(focus){ return String(focus||'').split(/\r?\n|·|;|•/).map(s=>s.trim()).filter(Boolean); }
+
+function thisBlockCardHTML(){
+  const plan=Array.isArray(PLAN_DATA)?PLAN_DATA:[];
+  if(!plan.length) return '';
+  let idx=currentBlockIdx(plan), lbl='This Block', b;
+  if(idx>=0){ b=plan[idx]; }
+  else { const n=nextBlockIdx(plan); if(n>=0){ b=plan[n]; lbl='Up Next'; } else { b=plan[plan.length-1]; lbl='Most Recent Block'; } }
+  const dates=[b.start?hFmtDate(b.start):'', b.end?hFmtDate(b.end):''].filter(Boolean).join(' – ');
+  return `<div class="block-now" data-go="view:practice"><div class="lbl">${esc(lbl)}</div><div class="bn-name">${esc(b.block)}</div>`
+    + (b.theme?`<div class="bn-theme">${esc(b.theme)}</div>`:'')
+    + `<div class="bn-go">${dates?esc(dates)+' · ':''}See the plan →</div></div>`;
+}
+
+function renderPractice(){
+  const el=$("#practiceContent"); if(!el) return;
+  const plan=Array.isArray(PLAN_DATA)?PLAN_DATA:[];
+  let h=`<div class="pl-head"><h2>Practice Plan</h2><p>The season, block by block.</p></div>`;
+  if(!plan.length){ el.innerHTML=h+`<div class="pl-empty">The season plan isn't loaded yet — Coach adds it in the <b>Plan</b> tab.</div>`; return; }
+  const nowIdx=currentBlockIdx(plan);
+  let phase='';
+  plan.forEach((b,i)=>{
+    if(b.phase && b.phase!==phase){ phase=b.phase; h+=`<div class="pl-phase">${esc(phase)}</div>`; }
+    const isNow=(i===nowIdx);
+    const dates=[b.start?hFmtDate(b.start):'', b.end?hFmtDate(b.end):''].filter(Boolean).join(' – ');
+    const lis=focusLines(b.focus).map(x=>`<li>${esc(x)}</li>`).join('');
+    h+=`<div class="pl-block ${isNow?'now open':''}" data-block="${i}"><div class="pl-block-top"><div class="pl-b"><div class="pl-bname">${esc(b.block)}</div>${dates?`<div class="pl-bdates">${esc(dates)}</div>`:''}</div>`
+      + (isNow?`<span class="pl-now-tag">Now</span>`:'')
+      + `<svg class="pl-caret" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></div>`
+      + `<div class="pl-body">${b.theme?`<p class="pl-theme">${esc(b.theme)}</p>`:''}${lis?`<ul class="pl-focus">${lis}</ul>`:''}</div></div>`;
+  });
+  el.innerHTML=h+`<div class="home-foot"></div>`;
+}
+$("#practiceContent").addEventListener("click",e=>{ const t=e.target.closest(".pl-block-top"); if(t){ t.closest(".pl-block").classList.toggle("open"); } });
+$("#coachContent").addEventListener("click",e=>{ const b=e.target.closest("[data-go]"); if(b){ const [k,v]=b.dataset.go.split(":"); if(k==="view") switchView(v); else if(k==="event"){ switchView("events"); selectEvent(v); } } });
+
+/* ============================================================
    NAVIGATION
    ============================================================ */
 function switchView(v){
@@ -1895,7 +1989,7 @@ $("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
 
   const readSession = () => { try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch(e){ return null; } };
   const validSession = () => { const s = readSession(); return s && s.exp > Date.now(); };
-  const saveSession = (name, admin, home, board, coach) => localStorage.setItem(KEY, JSON.stringify({ name, admin: !!admin, home: home||null, board: board||null, coach: coach||null, exp: Date.now() + SESSION_HOURS*3600*1000 }));
+  const saveSession = (name, admin, home, board, coach, plan) => localStorage.setItem(KEY, JSON.stringify({ name, admin: !!admin, home: home||null, board: board||null, coach: coach||null, plan: plan||null, exp: Date.now() + SESSION_HOURS*3600*1000 }));
 
   function showChip(name){
     let chip = document.getElementById('signoutChip');
@@ -1908,21 +2002,22 @@ $("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
     chip.textContent = 'Sign out · ' + name;
     chip.classList.remove('hidden');
   }
-  function openApp(name, admin, home, board, coach){
+  function openApp(name, admin, home, board, coach, plan){
     gate.classList.add('hidden');
     gate.setAttribute('aria-hidden','true');
     document.body.classList.toggle('admin-mode', !!admin);
     showChip(name);
-    MY_NAME = name; BOARD_DATA = board || null; COACH_DATA = coach || null; HOME_DATA = home || null;
+    MY_NAME = name; BOARD_DATA = board || null; COACH_DATA = coach || null; HOME_DATA = home || null; PLAN_DATA = plan || null;
     try { renderHome(home, name); } catch(e){}
     try { renderLeaderboard(); } catch(e){}
+    try { renderPractice(); } catch(e){}
     if(admin){ try { renderCoach(); } catch(e){} switchView('coach'); }
   }
   function signOut(){ localStorage.removeItem(KEY); location.reload(); }
 
   if(validSession()){
     const s = readSession();
-    openApp(s.name, s.admin, s.home, s.board, s.coach);
+    openApp(s.name, s.admin, s.home, s.board, s.coach, s.plan);
   } else {
     setTimeout(() => fEl && fEl.focus(), 120);
   }
@@ -1937,7 +2032,7 @@ $("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
     // Setup mode (backend not connected yet): allow in, no logging.
     if(!configured){
       const name = first + ' ' + last;
-      saveSession(name, false, null, null, null); openApp(name, false, null, null, null); return;
+      saveSession(name, false, null, null, null, null); openApp(name, false, null, null, null, null); return;
     }
 
     try{
@@ -1949,8 +2044,8 @@ $("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
       const data = await res.json();
       if(data && data.ok){
         const name = data.name || (first + ' ' + last);
-        saveSession(name, data.admin, data.home, data.board, data.coach);
-        openApp(name, data.admin, data.home, data.board, data.coach);
+        saveSession(name, data.admin, data.home, data.board, data.coach, data.plan);
+        openApp(name, data.admin, data.home, data.board, data.coach, data.plan);
       } else {
         btn.disabled = false; btn.textContent = 'Enter';
         msg.textContent = 'That name isn’t on the roster — check spelling or ask Coach.';
