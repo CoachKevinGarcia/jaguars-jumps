@@ -18,7 +18,11 @@
 
 const ROSTER_TAB = 'Roster', LOG_TAB = 'Log', MARKS_TAB = 'Marks',
       SCHEDULE_TAB = 'Schedule', NOTES_TAB = 'Notes', TESTABLES_TAB = 'Testables',
-      PLAN_TAB = 'Plan';
+      PLAN_TAB = 'Plan', SESSIONS_TAB = 'Sessions';
+
+// Bump this whenever you paste a new Code.gs, so you can confirm which version is live
+// by opening the /exec URL in a browser (it shows in the health check).
+const VERSION = 'v4 · plan + sessions (2026-06-19)';
 
 function doPost(e) {
   try {
@@ -48,7 +52,9 @@ function doPost(e) {
 
     ss.getSheetByName(LOG_TAB).appendRow([new Date(), match, String(body.ua || '')]);
 
-    const resp = { ok: true, name: match, admin: admin, home: buildHome(ss, match), board: buildBoard(ss), plan: buildPlan(ss) };
+    const resp = { ok: true, name: match, admin: admin, version: VERSION,
+                   home: buildHome(ss, match), board: buildBoard(ss),
+                   plan: buildPlan(ss), sessions: buildSessions(ss) };
     if (admin) resp.coach = buildCoach(ss);
     return json(resp);
   } catch (err) {
@@ -56,7 +62,7 @@ function doPost(e) {
   }
 }
 
-function doGet() { return json({ ok: true, status: 'Jaguars Jumps login service is running.' }); }
+function doGet() { return json({ ok: true, status: 'Jaguars Jumps login service is running.', version: VERSION }); }
 function json(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
 
 // ---- helpers ----
@@ -127,6 +133,40 @@ function buildPlan(ss) {
       theme: String(r[4] || '').trim(),
       focus: String(r[5] || '').trim()
     }));
+}
+
+// Daily practice sessions (everyone). One sheet row = one drill; rows are grouped
+// into a session by Block + Day. Session meta (Date/Type/Intensity/Goal) is taken
+// from the first row of the group, so you only fill those once per session.
+function buildSessions(ss) {
+  const tz = ss.getSpreadsheetTimeZone();
+  const order = [], map = {};
+  let pBlock = '', pDay = '';
+  _read(ss, SESSIONS_TAB, 12).forEach(r => {
+    let block = String(r[0] || '').trim(), day = String(r[1] || '').trim();
+    if (!block) block = pBlock;   // blank Block/Day = same session as the row above
+    if (!day)   day   = pDay;
+    if (!block && !day) return;
+    pBlock = block; pDay = day;
+    const key = block + '||' + day;
+    if (!map[key]) {
+      map[key] = { block: block, day: day, date: _ymd(r[2], tz),
+                   type: String(r[3]||'').trim(), intensity: String(r[4]||'').trim(),
+                   goal: String(r[5]||'').trim(), items: [] };
+      order.push(key);
+    }
+    const s = map[key];
+    if (!s.date)      s.date      = _ymd(r[2], tz);
+    if (!s.type)      s.type      = String(r[3]||'').trim();
+    if (!s.intensity) s.intensity = String(r[4]||'').trim();
+    if (!s.goal)      s.goal      = String(r[5]||'').trim();
+    const seg = String(r[6]||'').trim(), item = String(r[7]||'').trim();
+    if (seg || item) s.items.push({
+      segment: seg, item: item, detail: String(r[8]||'').trim(),
+      time: String(r[9]||'').trim(), rest: String(r[10]||'').trim(), cue: String(r[11]||'').trim()
+    });
+  });
+  return order.map(k => map[k]);
 }
 
 // Coach overview (admins only): goals, notes, and last-seen activity.
