@@ -146,6 +146,32 @@ Your block-end test results — they power the **Testables** board on the Leader
 - **Result** is feet-dash-inches for distances (`9-02.00`) or a plain number for times (`1.05`).
 - Add a new row each time you test — the board always shows each athlete's best.
 
+### Tab 5: `Plan` (the season blocks)
+Powers the **Plan** tab's block timeline and the "This Block" card. **Pre-filled** with all 16
+of your blocks in the import file — you usually won't touch this except to tweak wording.
+
+**Headers in row 1:** `Block | Phase | Start | End | Theme | Focus`
+- `Start`/`End` as `2026-08-03` — the app highlights whichever block today falls inside ("Now").
+- `Focus` is a single cell; separate bullets with ` · ` (a middle dot) and the app splits them.
+
+### Tab 6: `Sessions` (the daily practice detail)
+Powers the per-day practice card athletes open before practice (Setup → drills → goal).
+**One row per drill.** The import file includes a worked Block 1 · Day 1 example to copy.
+
+**Headers in row 1:**
+`Block | Day | Date | Type | Intensity | Goal | Segment | Item | Sets/Reps | Time | Rest | Cue`
+
+| Block | Day | Date | Type | Intensity | Goal | Segment | Item | Sets/Reps | Time | Rest | Cue |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Block 1 · Foundation | Day 1 | | GPP | Teach | Learn the warm-up… | Warm-Up | Standard Warm-Up | full circuit | 25 | — | Even lines… |
+| | | | | | | Speed | Wall drills | 3×10s | 8 | full | Tall, push the ground |
+
+- **Fill `Block`, `Day`, `Date`, `Type`, `Intensity`, `Goal` only on the first row** of a session.
+  Leave them blank on the following drill rows — the app carries them down (blank = "same session").
+- A new session starts whenever you type a new `Block`/`Day`.
+- **`Date`** is optional — fill it and that session pops up as **"Today's Practice"** on the day it matches.
+- **`Time`** is minutes (the app totals them); **`Segment`** groups drills (Warm-Up / Speed / Power / Strength / Cool-down).
+
 ---
 
 ## PART 4 — Starter season schedule (optional, paste-ready)
@@ -193,6 +219,11 @@ Paste into the `Schedule` tab starting at **row 2** (under the headers).
 
 - **Home is empty after logging in.** You probably saved the script but didn't publish a
   **New version** (Part 2). Redo Part 2, then sign out and back in.
+- **Not sure which script version is live?** Open your Web-app `/exec` URL in a browser. It
+  shows a `version` line (e.g. `v4 · plan + sessions`). If it's older than the `VERSION` at the
+  top of the latest `Code.gs`, you still need to redeploy a New version (Part 2).
+- **A new feature/tab isn't showing up.** New app features that add data (Plan, Sessions, etc.)
+  ship in a new `Code.gs` — paste it and redeploy a **New version**, then sign out and back in.
 - **An athlete's marks don't show.** The `Athlete` cell doesn't match the `Roster`. It must be
   `First Last`, spelled the same (capitalization is ignored, spelling and spacing are not).
 - **The Leaderboard is empty or everyone's in one list.** Add the **`Gender`** column to your
