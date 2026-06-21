@@ -172,6 +172,23 @@ Powers the per-day practice card athletes open before practice (Setup → drills
 - **`Date`** is optional — fill it and that session pops up as **"Today's Practice"** on the day it matches.
 - **`Time`** is minutes (the app totals them); **`Segment`** groups drills (Warm-Up / Speed / Power / Strength / Cool-down).
 
+### Tab 7: `Calendar` (extra dates for the month calendar)
+The **Plan tab → Calendar** view is a month grid with color-coded days. It **auto-pulls meets
+(`Schedule`) and dated practices (`Sessions`)** — so this tab is only for the *extras* that aren't
+those: parent meeting, breaks, holidays, deadlines, senior night, etc.
+
+**Headers in row 1:** `Date | Event | Type | Time | Location`
+
+| Date | Event | Type | Time | Location |
+|---|---|---|---|---|
+| 2027-02-12 | Parent Meeting | Meeting | | Gym |
+| 2027-03-22 | Spring Break | Holiday | | |
+
+- **`Type`** sets the dot color (legend on the calendar): `Holiday` = red, `Meeting`/`Deadline` = navy.
+  Meets and practices get their colors automatically (Home Dual navy, Away Dual pink, Invitational
+  green, Qualifier black, Championship/CIF orange, League purple, Practice gray).
+- For a multi-day break, add **one row per day** so the whole stretch colors in.
+
 ---
 
 ## PART 4 — Starter season schedule (optional, paste-ready)
