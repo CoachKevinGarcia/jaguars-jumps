@@ -317,6 +317,48 @@
   .pl-sess .ps-goal{font-size:12.5px;color:var(--ink-soft);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .pl-sess .ps-caret{flex:0 0 auto;color:var(--silver);}
 
+  /* ---------- Plan sub-toggle ---------- */
+  .pl-toggle{display:flex;gap:6px;margin:12px 16px 0;background:var(--cue-tint);border-radius:11px;padding:4px;}
+  .pl-toggle button{flex:1;border:0;background:transparent;color:var(--ink-soft);font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;padding:8px;border-radius:8px;cursor:pointer;}
+  .pl-toggle button.active{background:var(--navy);color:#fff;}
+
+  /* ---------- Month calendar ---------- */
+  .cal-nav{display:flex;align-items:center;justify-content:space-between;margin:14px 16px 8px;}
+  .cal-nav h3{font-family:var(--display);font-weight:700;font-size:19px;text-transform:uppercase;letter-spacing:.02em;color:var(--ink);margin:0;}
+  .cal-nav button{background:var(--card);border:1px solid var(--line);border-radius:9px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink);}
+  .cal-nav button:disabled{opacity:.35;cursor:default;}
+  .cal-grid{margin:0 16px;}
+  .cal-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:3px;}
+  .cal-dow span{text-align:center;font-family:var(--display);font-weight:600;font-size:10px;letter-spacing:.06em;color:var(--silver);}
+  .cal-days{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+  .cal-day{aspect-ratio:1;border-radius:8px;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:4px;cursor:default;position:relative;}
+  .cal-day.empty{background:transparent;border-color:transparent;}
+  .cal-day .dn{font-size:12px;font-weight:600;color:var(--ink);line-height:1;}
+  .cal-day.has{cursor:pointer;}
+  .cal-day.today{box-shadow:0 0 0 2px var(--navy-3) inset;}
+  .cal-day.sel{box-shadow:0 0 0 2px var(--ink) inset;}
+  .cal-dots{display:flex;gap:2px;margin-top:3px;flex-wrap:wrap;justify-content:center;max-width:90%;}
+  .cal-dot{width:6px;height:6px;border-radius:50%;}
+  .cal-legend{display:flex;flex-wrap:wrap;gap:6px 12px;margin:14px 16px 0;}
+  .cal-legend .lg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink-soft);}
+  .cal-legend .lg i{width:9px;height:9px;border-radius:50%;display:inline-block;}
+  .cal-detail{margin:12px 16px 0;}
+  .cal-detail .cd-date{font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:8px;}
+  .cal-ev{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-bottom:7px;box-shadow:var(--shadow);}
+  .cal-ev .bar{width:4px;align-self:stretch;border-radius:3px;flex:0 0 auto;}
+  .cal-ev .ev-t{flex:1;}
+  .cal-ev .ev-name{font-weight:600;font-size:14px;color:var(--ink);}
+  .cal-ev .ev-meta{font-size:11.5px;color:var(--silver);font-family:var(--mono);margin-top:1px;}
+  .cal-ev .ev-tag{font-family:var(--display);font-weight:600;font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:#fff;border-radius:999px;padding:2px 7px;flex:0 0 auto;}
+
+  /* ---------- Coach collapsible ---------- */
+  .co-collapse .co-head{cursor:pointer;}
+  .co-collapse .co-head::after{display:none;}
+  .co-collapse .co-head .co-line{flex:1;height:1px;background:var(--line);}
+  .co-collapse .co-caret{color:var(--silver);transition:transform .2s;flex:0 0 auto;}
+  .co-collapse.open .co-caret{transform:rotate(90deg);}
+  .co-collapse:not(.open) .co-body{display:none;}
+
   /* ---------- Today's Practice + Session detail ---------- */
   .today-card{margin:14px 16px 0;background:linear-gradient(160deg,var(--navy) 0%,var(--navy-2) 100%);color:#fff;border-radius:16px;padding:15px 17px;box-shadow:var(--shadow);cursor:pointer;}
   .today-card .lbl{font-family:var(--display);font-weight:600;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--silver-light);}
@@ -1863,28 +1905,15 @@ function renderCoach(){
   const lastMap={}; (coach.activity||[]).forEach(a=>{ lastMap[a.name.toLowerCase()]=a.lastSeen; });
   const events=[['LJ','Long Jump'],['TJ','Triple Jump'],['HJ','High Jump']];
 
-  let h=`<div class="home-greet"><p class="hi">Coach Dashboard</p><p class="sub">Jurupa Valley Jaguars · Jumps</p></div>`;
-  h += thisBlockCardHTML();
+  const caretHead = (title) => `<div class="home-h co-head"><span>${title}</span><span class="co-line"></span><svg class="co-caret" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></div>`;
 
-  // Meet countdowns (same as athlete Home) + team announcement
-  h += meetCountdownsHTML((HOME_DATA||{}).schedule || []).html;
+  let h=`<div class="home-greet"><p class="hi">Coach Dashboard</p></div>`;
   const general = ((HOME_DATA||{}).general || '').trim();
-  if(general) h += `<div class="home-h">Team</div><div class="note-card general"><div class="nt-lbl">Announcement</div><div class="nt-body">${esc(general)}</div></div>`;
+  if(general) h += `<div class="note-card general" style="margin-top:12px"><div class="nt-lbl">Announcement</div><div class="nt-body">${esc(general)}</div></div>`;
+  h += thisBlockCardHTML();
+  h += meetCountdownsHTML((HOME_DATA||{}).schedule || []).html;
 
-  // Team bests, split by gender so the girls' marks aren't buried under the boys'
-  genderGroups(athletes).forEach(([gk,gName])=>{
-    let tb='';
-    events.forEach(([ev,evName])=>{
-      let best=null;
-      athletes.filter(a=>inGroup(a.gender,gk)).forEach(a=>{
-        const m=(a.marks||[]).find(x=>String(x.event).toUpperCase()===ev);
-        if(m&&m.pr){ const v=hToInches(m.pr); if(v!=null&&(!best||v>best.v)) best={v,name:a.name,raw:m.pr}; }
-      });
-      if(best) tb+=`<div class="cd-card"><div class="t">${evName}</div><div class="d" style="font-size:15px">${esc(best.raw)}</div><div class="u">${esc(best.name.split(' ')[0])}</div></div>`;
-    });
-    if(tb) h+=`<div class="home-h">${gk==='all'?'Team Bests (PR)':'Team Bests · '+gName+' (PR)'}</div><div class="cd-row">${tb}</div>`;
-  });
-
+  // Needs Attention — the actionable triage, up top
   const noMark=new Set(); const far=[];
   athletes.forEach(a=>{
     (a.marks||[]).forEach(m=>{
@@ -1900,35 +1929,87 @@ function renderCoach(){
   if(far.length) h+=`<div class="coach-flag"><b>Furthest from goal:</b> ${esc(far.slice(0,3).map(x=>`${x.nm} ${x.ev} (${Math.round(x.pct)}%)`).join(', '))}</div>`;
   if(!noMark.size && !far.length) h+=`<div class="home-empty">No flags right now — everyone's tracking.</div>`;
 
-  h+=`<div class="home-h">Goals · % to Goal</div>`;
-  let any=false;
+  // Team bests, split by gender
+  genderGroups(athletes).forEach(([gk,gName])=>{
+    let tb='';
+    events.forEach(([ev,evName])=>{
+      let best=null;
+      athletes.filter(a=>inGroup(a.gender,gk)).forEach(a=>{
+        const m=(a.marks||[]).find(x=>String(x.event).toUpperCase()===ev);
+        if(m&&m.pr){ const v=hToInches(m.pr); if(v!=null&&(!best||v>best.v)) best={v,name:a.name,raw:m.pr}; }
+      });
+      if(best) tb+=`<div class="cd-card"><div class="t">${evName}</div><div class="d" style="font-size:15px">${esc(best.raw)}</div><div class="u">${esc(best.name.split(' ')[0])}</div></div>`;
+    });
+    if(tb) h+=`<div class="home-h">${gk==='all'?'Team Bests (PR)':'Team Bests · '+gName+' (PR)'}</div><div class="cd-row">${tb}</div>`;
+  });
+
+  // Goals · % to Goal — collapsible
+  let goalsBody='', any=false;
   [...athletes].sort((a,b)=>a.name.localeCompare(b.name)).forEach(a=>{
     (a.marks||[]).forEach(m=>{
       const g=goalMap[(a.name+'|'+m.event).toLowerCase()]; const goal=g?g.goal:''; if(!goal) return; any=true;
       const gi=hToInches(goal), ci=hToInches(m.sb||m.pr);
       const pct=(gi&&ci)?Math.max(0,Math.min(100,Math.round(ci/gi*100))):null;
-      h+=`<div class="coach-card"><div class="coach-row"><span class="coach-nm">${esc(a.name)} <span class="lb-sub">${esc(m.event)}</span></span>`
+      goalsBody+=`<div class="coach-card"><div class="coach-row"><span class="coach-nm">${esc(a.name)} <span class="lb-sub">${esc(m.event)}</span></span>`
         +`<span class="coach-meta">${esc(m.sb||m.pr||'—')} / ${esc(goal)}</span>`
         +(pct!=null?`<span class="cg-bar"><span class="cg-fill" style="width:${pct}%"></span></span>`:'')+`</div></div>`;
     });
   });
-  if(!any) h+=`<div class="home-empty">No goals set yet — add them in the Marks tab.</div>`;
+  if(!any) goalsBody=`<div class="home-empty">No goals set yet — add them in the Marks tab.</div>`;
+  h+=`<div class="co-collapse">${caretHead('Goals · % to Goal')}<div class="co-body">${goalsBody}</div></div>`;
 
-  h+=`<div class="home-h">Login Activity</div>`;
+  // Login Activity — collapsible
   const act=athletes.map(a=>({name:a.name, last:lastMap[a.name.toLowerCase()]||null}));
   act.sort((x,y)=>(y.last?Date.parse(y.last):0)-(x.last?Date.parse(x.last):0));
-  h+=`<div class="coach-card">`+act.map(a=>{
+  const actBody=`<div class="coach-card">`+act.map(a=>{
     const rel=a.last?relTime(a.last):'never logged in';
     const late=!a.last||(Date.now()-Date.parse(a.last))>7*864e5;
     return `<div class="coach-row"><span class="coach-nm">${esc(a.name)}</span><span class="coach-meta ${late?'coach-late':'coach-dim'}">${rel}</span></div>`;
-  }).join('')+`</div><div class="home-foot"></div>`;
+  }).join('')+`</div>`;
+  h+=`<div class="co-collapse">${caretHead('Login Activity')}<div class="co-body">${actBody}</div></div>`;
+
+  h+=`<div class="home-foot"></div>`;
   el.innerHTML=h;
 }
 
 /* ============================================================
    PRACTICE PLAN
    ============================================================ */
-let PLAN_DATA = null, SESSIONS_DATA = null, OPEN_SESSION = null;
+let PLAN_DATA = null, SESSIONS_DATA = null, OPEN_SESSION = null, CAL_DATA = null;
+let PLAN_MODE = 'blocks', CAL_YM = null, CAL_SEL = null;
+
+/* event type → colour, matching the coach's printed legend */
+function calColor(type, location){
+  const t = String(type||'').toLowerCase(), loc = String(location||'').toLowerCase();
+  if(/practice/.test(t))                      return ['Practice','#8A93A3'];
+  if(/holiday|break|off|no school/.test(t))   return ['Holiday','#B23A2E'];
+  if(/league/.test(t))                        return ['League Champ','#7A5AA8'];
+  if(/cif|state|master|final|prelim|champ|qualifier/.test(t)){
+    if(/qualifier/.test(t)) return ['Winter Qualifier','#2B2B2B'];
+    return ['Championship','#E08A2B'];
+  }
+  if(/invit|relay/.test(t))                   return ['Invitational','#2E9E5B'];
+  if(/dual|tri/.test(t))                      return /away/.test(loc) ? ['Away Dual','#D6699B'] : ['Home Dual','#112A52'];
+  if(/meeting|parent|deadline|banquet|senior/.test(t)) return ['Team Event','#1C3A6E'];
+  return ['Event','#1C3A6E'];
+}
+function calEventsByDate(){
+  const map = {};
+  const add = (date, name, type, location, time) => {
+    if(!date) return; const key = String(date).slice(0,10);
+    const [tag, color] = calColor(type, location);
+    (map[key] = map[key] || []).push({ name, type, location, time, tag, color });
+  };
+  (((HOME_DATA||{}).schedule)||[]).forEach(m => add(m.date, m.meet, m.type, m.location, ''));
+  (Array.isArray(SESSIONS_DATA)?SESSIONS_DATA:[]).forEach(s => { if(s.date) add(s.date, s.day||'Practice', 'Practice', '', ''); });
+  (Array.isArray(CAL_DATA)?CAL_DATA:[]).forEach(c => add(c.date, c.event, c.type, c.location, c.time));
+  return map;
+}
+function calMonthsWithEvents(map){
+  const set = new Set(); Object.keys(map).forEach(k=>set.add(k.slice(0,7)));
+  return [...set].sort();
+}
+function ymKey(y,m){ return y+'-'+String(m+1).padStart(2,'0'); }
 
 function blockKey(s){ const m=String(s||'').toLowerCase().match(/block\s*\d+/); return m ? m[0].replace(/\s+/,' ') : String(s||'').trim().toLowerCase(); }
 function sessionsForBlock(block){ const k=blockKey(block); return (Array.isArray(SESSIONS_DATA)?SESSIONS_DATA:[]).map((s,i)=>({s,i})).filter(x=>blockKey(x.s.block)===k); }
@@ -1992,6 +2073,56 @@ function sessionDetailHTML(s){
   });
   return h;
 }
+function calNav(delta){
+  if(!CAL_YM) return;
+  const [y,mm]=CAL_YM.split('-').map(Number);
+  const d=new Date(y, (mm-1)+delta, 1);
+  CAL_YM=ymKey(d.getFullYear(), d.getMonth()); CAL_SEL=null;
+  renderPractice();
+}
+function renderCalendar(){
+  const map=calEventsByDate();
+  const months=calMonthsWithEvents(map);
+  if(!CAL_YM){
+    const t=new Date(), todayYM=ymKey(t.getFullYear(), t.getMonth());
+    CAL_YM = months.includes(todayYM) ? todayYM : (months.find(m=>m>=todayYM) || months[0] || todayYM);
+  }
+  const [yy,mm]=CAL_YM.split('-').map(Number), year=yy, month=mm-1;
+  const monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const startDow=new Date(year,month,1).getDay();
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  const td=new Date(), todayStr=td.getFullYear()+'-'+String(td.getMonth()+1).padStart(2,'0')+'-'+String(td.getDate()).padStart(2,'0');
+
+  let h=`<div class="cal-nav"><button data-cal-nav="-1" aria-label="Previous month"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>`
+    + `<h3>${monthNames[month]} ${year}</h3>`
+    + `<button data-cal-nav="1" aria-label="Next month"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button></div>`;
+  h+=`<div class="cal-grid"><div class="cal-dow"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div><div class="cal-days">`;
+  for(let i=0;i<startDow;i++) h+=`<div class="cal-day empty"></div>`;
+  for(let d=1; d<=daysInMonth; d++){
+    const key=year+'-'+String(month+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    const evs=map[key]||[];
+    const cls=['cal-day']; if(evs.length) cls.push('has'); if(key===todayStr) cls.push('today'); if(key===CAL_SEL) cls.push('sel');
+    const dots=evs.slice(0,4).map(e=>`<span class="cal-dot" style="background:${e.color}"></span>`).join('');
+    h+=`<div class="${cls.join(' ')}" ${evs.length?`data-cal-day="${key}"`:''}><span class="dn">${d}</span>${dots?`<span class="cal-dots">${dots}</span>`:''}</div>`;
+  }
+  h+=`</div></div>`;
+  const legend=[['Home Dual','#112A52'],['Away Dual','#D6699B'],['Invitational','#2E9E5B'],['Qualifier','#2B2B2B'],['Championship','#E08A2B'],['League','#7A5AA8'],['Practice','#8A93A3'],['Holiday','#B23A2E']];
+  h+=`<div class="cal-legend">`+legend.map(l=>`<span class="lg"><i style="background:${l[1]}"></i>${l[0]}</span>`).join('')+`</div>`;
+  const sel = CAL_SEL && map[CAL_SEL] ? CAL_SEL : null;
+  h+=`<div class="cal-detail">`;
+  if(sel){
+    const dd=hParseDate(sel), label=dd?dd.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'}):sel;
+    h+=`<div class="cd-date">${esc(label)}</div>`;
+    map[sel].forEach(e=>{
+      const meta=[e.time, e.location].filter(Boolean).join(' · ');
+      h+=`<div class="cal-ev"><span class="bar" style="background:${e.color}"></span><span class="ev-t"><span class="ev-name">${esc(e.name)}</span>${meta?`<span class="ev-meta">${esc(meta)}</span>`:''}</span><span class="ev-tag" style="background:${e.color}">${esc(e.tag)}</span></div>`;
+    });
+  } else {
+    h+=`<div class="home-empty" style="margin:0">Tap a colored day to see what's on.</div>`;
+  }
+  h+=`</div>`;
+  return h;
+}
 function renderPractice(){
   const el=$("#practiceContent"); if(!el) return;
   if(OPEN_SESSION!=null && Array.isArray(SESSIONS_DATA) && SESSIONS_DATA[OPEN_SESSION]){
@@ -1999,9 +2130,12 @@ function renderPractice(){
     window.scrollTo({top:0});
     return;
   }
+  const isCal=(PLAN_MODE==='calendar');
+  let h=`<div class="pl-head"><h2>${isCal?'Team Calendar':'Practice Plan'}</h2><p>${isCal?'Meets, practices &amp; key dates.':'The season, block by block.'}</p></div>`;
+  h+=`<div class="pl-toggle"><button data-mode="blocks" class="${isCal?'':'active'}">Blocks</button><button data-mode="calendar" class="${isCal?'active':''}">Calendar</button></div>`;
+  if(isCal){ el.innerHTML=h+renderCalendar()+`<div class="home-foot"></div>`; return; }
   const plan=Array.isArray(PLAN_DATA)?PLAN_DATA:[];
   const hasSess=Array.isArray(SESSIONS_DATA)&&SESSIONS_DATA.length;
-  let h=`<div class="pl-head"><h2>Practice Plan</h2><p>The season, block by block.</p></div>`;
   const ti=todaySessionIdx();
   if(ti>=0){ const s=SESSIONS_DATA[ti]; h+=`<div class="today-card" data-sess="${ti}"><div class="lbl">Today's Practice</div><div class="tc-day">${esc(s.day||'Session')}</div>${s.goal?`<div class="tc-goal">${esc(s.goal)}</div>`:''}<div class="bn-go">Open session →</div></div>`; }
   if(!plan.length && !hasSess){ el.innerHTML=h+`<div class="pl-empty">The season plan isn't loaded yet — Coach adds it in the <b>Plan</b> tab.</div>`; return; }
@@ -2022,11 +2156,17 @@ function renderPractice(){
   el.innerHTML=h+`<div class="home-foot"></div>`;
 }
 $("#practiceContent").addEventListener("click",e=>{
+  const mode=e.target.closest("[data-mode]"); if(mode){ PLAN_MODE=mode.dataset.mode; renderPractice(); return; }
+  const nav=e.target.closest("[data-cal-nav]"); if(nav){ calNav(parseInt(nav.dataset.calNav,10)); return; }
+  const day=e.target.closest("[data-cal-day]"); if(day){ CAL_SEL=(CAL_SEL===day.dataset.calDay)?null:day.dataset.calDay; renderPractice(); return; }
   const back=e.target.closest("[data-back]"); if(back){ OPEN_SESSION=null; renderPractice(); return; }
   const sess=e.target.closest("[data-sess]"); if(sess){ OPEN_SESSION=parseInt(sess.dataset.sess,10); renderPractice(); return; }
   const t=e.target.closest(".pl-block-top"); if(t){ t.closest(".pl-block").classList.toggle("open"); }
 });
-$("#coachContent").addEventListener("click",e=>{ const b=e.target.closest("[data-go]"); if(b){ const [k,v]=b.dataset.go.split(":"); if(k==="view") switchView(v); else if(k==="event"){ switchView("guide"); showGuide(v); } } });
+$("#coachContent").addEventListener("click",e=>{
+  const ch=e.target.closest(".co-head"); if(ch){ ch.closest(".co-collapse").classList.toggle("open"); return; }
+  const b=e.target.closest("[data-go]"); if(b){ const [k,v]=b.dataset.go.split(":"); if(k==="view") switchView(v); else if(k==="event"){ switchView("guide"); showGuide(v); } }
+});
 
 /* ============================================================
    NAVIGATION
@@ -2090,18 +2230,18 @@ $("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
 
   const readSession = () => { try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch(e){ return null; } };
   const validSession = () => { const s = readSession(); return s && s.exp > Date.now(); };
-  const saveSession = (name, admin, home, board, coach, plan, sessions) => localStorage.setItem(KEY, JSON.stringify({ name, admin: !!admin, home: home||null, board: board||null, coach: coach||null, plan: plan||null, sessions: sessions||null, exp: Date.now() + SESSION_HOURS*3600*1000 }));
+  const saveSession = (name, admin, home, board, coach, plan, sessions, calendar) => localStorage.setItem(KEY, JSON.stringify({ name, admin: !!admin, home: home||null, board: board||null, coach: coach||null, plan: plan||null, sessions: sessions||null, calendar: calendar||null, exp: Date.now() + SESSION_HOURS*3600*1000 }));
 
   function showChip(name){
     const btn = document.getElementById('signOutBtn');
     if(btn && !btn.dataset.wired){ btn.addEventListener('click', signOut); btn.dataset.wired = '1'; }
   }
-  function openApp(name, admin, home, board, coach, plan, sessions){
+  function openApp(name, admin, home, board, coach, plan, sessions, calendar){
     gate.classList.add('hidden');
     gate.setAttribute('aria-hidden','true');
     document.body.classList.toggle('admin-mode', !!admin);
     showChip(name);
-    MY_NAME = name; BOARD_DATA = board || null; COACH_DATA = coach || null; HOME_DATA = home || null; PLAN_DATA = plan || null; SESSIONS_DATA = sessions || null; OPEN_SESSION = null;
+    MY_NAME = name; BOARD_DATA = board || null; COACH_DATA = coach || null; HOME_DATA = home || null; PLAN_DATA = plan || null; SESSIONS_DATA = sessions || null; CAL_DATA = calendar || null; OPEN_SESSION = null; CAL_YM = null; CAL_SEL = null;
     try { renderHome(home, name); } catch(e){}
     try { renderLeaderboard(); } catch(e){}
     try { renderPractice(); } catch(e){}
@@ -2111,7 +2251,7 @@ $("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
 
   if(validSession()){
     const s = readSession();
-    openApp(s.name, s.admin, s.home, s.board, s.coach, s.plan, s.sessions);
+    openApp(s.name, s.admin, s.home, s.board, s.coach, s.plan, s.sessions, s.calendar);
   } else {
     setTimeout(() => fEl && fEl.focus(), 120);
   }
@@ -2126,7 +2266,7 @@ $("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
     // Setup mode (backend not connected yet): allow in, no logging.
     if(!configured){
       const name = first + ' ' + last;
-      saveSession(name, false, null, null, null, null, null); openApp(name, false, null, null, null, null, null); return;
+      saveSession(name, false, null, null, null, null, null, null); openApp(name, false, null, null, null, null, null, null); return;
     }
 
     try{
@@ -2138,8 +2278,8 @@ $("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
       const data = await res.json();
       if(data && data.ok){
         const name = data.name || (first + ' ' + last);
-        saveSession(name, data.admin, data.home, data.board, data.coach, data.plan, data.sessions);
-        openApp(name, data.admin, data.home, data.board, data.coach, data.plan, data.sessions);
+        saveSession(name, data.admin, data.home, data.board, data.coach, data.plan, data.sessions, data.calendar);
+        openApp(name, data.admin, data.home, data.board, data.coach, data.plan, data.sessions, data.calendar);
       } else {
         btn.disabled = false; btn.textContent = 'Enter';
         msg.textContent = 'That name isn’t on the roster — check spelling or ask Coach.';

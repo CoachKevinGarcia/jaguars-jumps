@@ -18,11 +18,11 @@
 
 const ROSTER_TAB = 'Roster', LOG_TAB = 'Log', MARKS_TAB = 'Marks',
       SCHEDULE_TAB = 'Schedule', NOTES_TAB = 'Notes', TESTABLES_TAB = 'Testables',
-      PLAN_TAB = 'Plan', SESSIONS_TAB = 'Sessions';
+      PLAN_TAB = 'Plan', SESSIONS_TAB = 'Sessions', CALENDAR_TAB = 'Calendar';
 
 // Bump this whenever you paste a new Code.gs, so you can confirm which version is live
 // by opening the /exec URL in a browser (it shows in the health check).
-const VERSION = 'v4 · plan + sessions (2026-06-19)';
+const VERSION = 'v5 · calendar (2026-06-20)';
 
 function doPost(e) {
   try {
@@ -54,7 +54,7 @@ function doPost(e) {
 
     const resp = { ok: true, name: match, admin: admin, version: VERSION,
                    home: buildHome(ss, match), board: buildBoard(ss),
-                   plan: buildPlan(ss), sessions: buildSessions(ss) };
+                   plan: buildPlan(ss), sessions: buildSessions(ss), calendar: buildCalendar(ss) };
     if (admin) resp.coach = buildCoach(ss);
     return json(resp);
   } catch (err) {
@@ -133,6 +133,16 @@ function buildPlan(ss) {
       theme: String(r[4] || '').trim(),
       focus: String(r[5] || '').trim()
     }));
+}
+
+// Extra calendar entries (everyone): holidays, meetings, breaks, deadlines —
+// anything that isn't already a meet (Schedule) or a dated practice (Sessions).
+function buildCalendar(ss) {
+  const tz = ss.getSpreadsheetTimeZone();
+  return _read(ss, CALENDAR_TAB, 5)
+    .filter(r => r[0] !== '' && String(r[1] || '').trim())
+    .map(r => ({ date: _ymd(r[0], tz), event: String(r[1]||'').trim(),
+                 type: String(r[2]||'').trim(), time: String(r[3]||'').trim(), location: String(r[4]||'').trim() }));
 }
 
 // Daily practice sessions (everyone). One sheet row = one drill; rows are grouped
