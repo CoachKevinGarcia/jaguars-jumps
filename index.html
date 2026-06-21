@@ -40,10 +40,13 @@
   .wordmark .school{font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--silver-light);}
   .wordmark .title{font-family:var(--display);font-weight:700;font-size:24px;letter-spacing:.02em;text-transform:uppercase;color:var(--white);}
   .title .accent{color:var(--silver);}
-  .editbtn{margin-left:auto;display:flex;align-items:center;gap:6px;background:transparent;border:1px solid rgba(255,255,255,.2);color:var(--silver-light);
+  .appbar-actions{margin-left:auto;display:flex;align-items:center;gap:8px;}
+  .editbtn,.signoutbtn{display:flex;align-items:center;gap:6px;background:transparent;border:1px solid rgba(255,255,255,.2);color:var(--silver-light);
     font-family:var(--display);font-weight:600;font-size:13px;letter-spacing:.08em;text-transform:uppercase;padding:7px 11px;border-radius:9px;cursor:pointer;transition:.16s;}
-  .editbtn svg{width:15px;height:15px;}
+  .editbtn svg,.signoutbtn svg{width:15px;height:15px;flex:0 0 auto;}
   .editbtn.on{background:var(--white);color:var(--navy);border-color:var(--white);}
+  .signoutbtn:active{background:rgba(255,255,255,.08);}
+  @media (max-width:420px){ .editbtn .ed-label, .signoutbtn .so-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);} .editbtn,.signoutbtn{padding:7px 9px;} }
   /* Edit button is coach-only — hidden unless the logged-in user is an admin */
   #editBtn{display:none;}
   body.admin-mode #editBtn{display:flex;}
@@ -52,6 +55,8 @@
   .event-tab{flex:1;border:1px solid rgba(255,255,255,.14);background:transparent;color:var(--silver-light);
     font-family:var(--display);font-weight:600;font-size:17px;letter-spacing:.06em;text-transform:uppercase;padding:9px 4px;border-radius:10px;cursor:pointer;transition:.18s;}
   .event-tab[aria-selected="true"]{background:var(--white);color:var(--navy);border-color:var(--white);}
+  .event-tabs.quad{gap:5px;}
+  .event-tabs.quad .event-tab{font-size:14px;letter-spacing:.02em;padding:9px 2px;}
   .event-tabs.hidden{display:none;}
 
   /* ---------- Views ---------- */
@@ -402,13 +407,20 @@
         <span class="school">Jurupa Valley Jaguars</span>
         <span class="title">Jumps <span class="accent">Guide</span></span>
       </div>
-      <button class="editbtn" id="editBtn" aria-pressed="false">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>
-        <span id="editBtnLabel">Edit</span>
-      </button>
+      <div class="appbar-actions">
+        <button class="editbtn" id="editBtn" aria-pressed="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>
+          <span class="ed-label" id="editBtnLabel">Edit</span>
+        </button>
+        <button class="signoutbtn" id="signOutBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+          <span class="so-label">Sign Out</span>
+        </button>
+      </div>
     </div>
-    <div class="event-tabs hidden" id="eventTabs" role="tablist">
-      <button class="event-tab" role="tab" aria-selected="true" data-ev="long">Long</button>
+    <div class="event-tabs hidden quad" id="eventTabs" role="tablist">
+      <button class="event-tab" role="tab" aria-selected="true" data-ev="fundamentals">Basics</button>
+      <button class="event-tab" role="tab" aria-selected="false" data-ev="long">Long</button>
       <button class="event-tab" role="tab" aria-selected="false" data-ev="triple">Triple</button>
       <button class="event-tab" role="tab" aria-selected="false" data-ev="high">High</button>
     </div>
@@ -496,10 +508,8 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg>Coach</button>
     <button class="nav-btn" aria-selected="false" data-view="practice">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4M16 2v4M3 9h18M5 4h14a2 2 0 012 2v13a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"/></svg>Plan</button>
-    <button class="nav-btn" aria-selected="false" data-view="events">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-7 4 5 3-4 6 8"/><circle cx="7" cy="6" r="2"/></svg>Events</button>
-    <button class="nav-btn" aria-selected="false" data-view="fundamentals">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Basics</button>
+    <button class="nav-btn" aria-selected="false" data-view="guide">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-7 4 5 3-4 6 8"/><circle cx="7" cy="6" r="2"/></svg>Guide</button>
     <button class="nav-btn" aria-selected="false" data-view="glossary">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 012-2h13v18H6a2 2 0 01-2-2z"/><path d="M8 7h7M8 11h7"/></svg>Glossary</button>
     <button class="nav-btn" aria-selected="false" data-view="leaderboard">
@@ -1716,16 +1726,14 @@ function renderHome(home, name){
   const general = (home.general||'').trim();
   let h = '';
 
-  h += `<div class="home-greet"><p class="hi">Welcome back, ${esc(first)}</p><p class="sub">Jurupa Valley Jaguars · Jumps</p></div>`;
+  h += `<div class="home-greet"><p class="hi">Welcome back, ${esc(first)}</p></div>`;
+  if(general){ h += `<div class="note-card general" style="margin-top:12px"><div class="nt-lbl">Announcement</div><div class="nt-body">${esc(general)}</div></div>`; }
   h += thisBlockCardHTML();
-
   const sched = meetCountdownsHTML(schedule);
   h += sched.html;
   if(!sched.hasNext){ h += `<div class="home-h">Schedule</div><div class="home-empty">No upcoming meets on the schedule yet.</div>`; }
 
-  if(general){ h += `<div class="home-h">Team</div><div class="note-card general"><div class="nt-lbl">Announcement</div><div class="nt-body">${esc(general)}</div></div>`; }
-
-  h += `<div class="home-h">Your Marks</div>`;
+  h += `<div class="home-h">Your Events</div>`;
   if(marks.length){
     marks.forEach(mk=>{
       const pr=String(mk.pr||'').trim(), sb=String(mk.sb||'').trim(), goal=String(mk.goal||'').trim(), gnote=String(mk.goalNote||'').trim();
@@ -1754,10 +1762,7 @@ function renderHome(home, name){
 
   if(note){ h += `<div class="home-h">From Coach</div><div class="note-card coach"><div class="nt-lbl">Your Note</div><div class="nt-body">${esc(note)}</div></div>`; }
 
-  h += `<div class="home-h">Explore</div><div class="navgrid">`;
-  [['Long Jump','event:long'],['Triple Jump','event:triple'],['High Jump','event:high'],['Basics','view:fundamentals'],['Glossary','view:glossary']]
-    .forEach(n=>{ h += `<button class="navcard" data-go="${n[1]}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>${n[0]}</button>`; });
-  h += `</div><div class="home-foot"></div>`;
+  h += `<div class="home-foot"></div>`;
 
   el.innerHTML = h;
 }
@@ -1765,7 +1770,7 @@ $("#homeContent").addEventListener("click",e=>{
   const b=e.target.closest("[data-go]"); if(!b) return;
   const [k,v]=b.dataset.go.split(":");
   if(k==="view"){ switchView(v); }
-  else if(k==="event"){ switchView("events"); selectEvent(v); }
+  else if(k==="event"){ switchView("guide"); showGuide(v); }
 });
 
 /* ============================================================
@@ -2021,21 +2026,38 @@ $("#practiceContent").addEventListener("click",e=>{
   const sess=e.target.closest("[data-sess]"); if(sess){ OPEN_SESSION=parseInt(sess.dataset.sess,10); renderPractice(); return; }
   const t=e.target.closest(".pl-block-top"); if(t){ t.closest(".pl-block").classList.toggle("open"); }
 });
-$("#coachContent").addEventListener("click",e=>{ const b=e.target.closest("[data-go]"); if(b){ const [k,v]=b.dataset.go.split(":"); if(k==="view") switchView(v); else if(k==="event"){ switchView("events"); selectEvent(v); } } });
+$("#coachContent").addEventListener("click",e=>{ const b=e.target.closest("[data-go]"); if(b){ const [k,v]=b.dataset.go.split(":"); if(k==="view") switchView(v); else if(k==="event"){ switchView("guide"); showGuide(v); } } });
 
 /* ============================================================
    NAVIGATION
    ============================================================ */
+let GUIDE_SUB = 'fundamentals';
+function showGuide(sub){
+  GUIDE_SUB = sub;
+  const isFund = (sub==='fundamentals');
+  $("#view-fundamentals").classList.toggle("active", isFund);
+  $("#view-events").classList.toggle("active", !isFund);
+  $$(".event-tab").forEach(x=>x.setAttribute("aria-selected", String(x.dataset.ev===sub)));
+  if(!isFund) renderEvent(sub);
+}
 function switchView(v){
   if(v==="practice"){ OPEN_SESSION=null; try{ renderPractice(); }catch(e){} }
+  if(v==="guide"){
+    $$(".view").forEach(s=>s.classList.remove("active"));
+    showGuide(GUIDE_SUB);
+    $$(".nav-btn").forEach(b=>b.setAttribute("aria-selected", String(b.dataset.view===v)));
+    $("#eventTabs").classList.remove("hidden");
+    window.scrollTo({top:0});
+    return;
+  }
   $$(".view").forEach(s=>s.classList.toggle("active", s.id===`view-${v}`));
   $$(".nav-btn").forEach(b=>b.setAttribute("aria-selected", String(b.dataset.view===v)));
-  $("#eventTabs").classList.toggle("hidden", v!=="events");
+  $("#eventTabs").classList.add("hidden");
   window.scrollTo({top:0});
 }
-function selectEvent(ev){ $$(".event-tab").forEach(x=>x.setAttribute("aria-selected",String(x.dataset.ev===ev))); renderEvent(ev); }
+function selectEvent(ev){ showGuide(ev); }
 $("#botbar").addEventListener("click",e=>{ const b=e.target.closest(".nav-btn"); if(b) switchView(b.dataset.view); });
-$("#eventTabs").addEventListener("click",e=>{ const t=e.target.closest(".event-tab"); if(t) selectEvent(t.dataset.ev); });
+$("#eventTabs").addEventListener("click",e=>{ const t=e.target.closest(".event-tab"); if(t) showGuide(t.dataset.ev); });
 
 $("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
 
@@ -2071,15 +2093,8 @@ $("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
   const saveSession = (name, admin, home, board, coach, plan, sessions) => localStorage.setItem(KEY, JSON.stringify({ name, admin: !!admin, home: home||null, board: board||null, coach: coach||null, plan: plan||null, sessions: sessions||null, exp: Date.now() + SESSION_HOURS*3600*1000 }));
 
   function showChip(name){
-    let chip = document.getElementById('signoutChip');
-    if(!chip){
-      chip = document.createElement('button');
-      chip.id = 'signoutChip'; chip.className = 'signout-chip';
-      chip.addEventListener('click', signOut);
-      document.body.appendChild(chip);
-    }
-    chip.textContent = 'Sign out · ' + name;
-    chip.classList.remove('hidden');
+    const btn = document.getElementById('signOutBtn');
+    if(btn && !btn.dataset.wired){ btn.addEventListener('click', signOut); btn.dataset.wired = '1'; }
   }
   function openApp(name, admin, home, board, coach, plan, sessions){
     gate.classList.add('hidden');
