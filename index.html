@@ -350,6 +350,15 @@
   .cal-ev .ev-name{display:block;font-weight:600;font-size:14px;color:var(--ink);}
   .cal-ev .ev-meta{display:block;font-size:11.5px;color:var(--silver);font-family:var(--mono);margin-top:1px;}
   .cal-ev .ev-tag{font-family:var(--display);font-weight:600;font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:#fff;border-radius:999px;padding:2px 7px;flex:0 0 auto;}
+  .cal-list{margin:0 16px;}
+  .cal-li{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:transparent;border:0;border-bottom:1px solid var(--line);padding:10px 2px;cursor:pointer;}
+  .cal-li:last-child{border-bottom:0;}
+  .cal-li .li-dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;}
+  .cal-li .li-date{font-family:var(--mono);font-weight:600;font-size:12px;color:var(--ink-soft);width:46px;flex:0 0 auto;}
+  .cal-li .li-name{flex:1;font-size:13.5px;font-weight:600;color:var(--ink);overflow:hidden;}
+  .cal-li .li-loc{font-weight:400;font-size:11.5px;color:var(--silver);}
+  .cal-li .li-tag{font-family:var(--display);font-weight:700;font-size:10px;letter-spacing:.04em;text-transform:uppercase;flex:0 0 auto;}
+  .cal-li.past{opacity:.5;}
 
   /* ---------- Coach collapsible ---------- */
   .co-collapse .co-head{cursor:pointer;}
@@ -2083,8 +2092,16 @@ function calNav(delta){
 function calCellBg(colors){
   const uniq=[...new Set(colors)];
   if(uniq.length===1) return uniq[0];
-  const step=100/uniq.length;
-  return 'linear-gradient(135deg,'+uniq.map((c,i)=>`${c} ${(i*step).toFixed(2)}% ${((i+1)*step).toFixed(2)}%`).join(',')+')';
+  const n=uniq.length, step=100/n, lw=1; // lw = half the divider width (px)
+  const parts=[];
+  uniq.forEach((c,i)=>{
+    const start=(i*step).toFixed(2), end=((i+1)*step).toFixed(2);
+    const s = i===0 ? '0%' : `calc(${start}% + ${lw}px)`;
+    const e = i===n-1 ? '100%' : `calc(${end}% - ${lw}px)`;
+    parts.push(`${c} ${s} ${e}`);
+    if(i<n-1) parts.push(`#fff calc(${end}% - ${lw}px) calc(${end}% + ${lw}px)`);
+  });
+  return `linear-gradient(135deg, ${parts.join(', ')})`;
 }
 function renderCalendar(){
   const map=calEventsByDate();
@@ -2115,18 +2132,35 @@ function renderCalendar(){
   h+=`</div></div>`;
   const legend=[['Home Dual','#112A52'],['Away Dual','#D6699B'],['Invitational','#2E9E5B'],['Qualifier','#2B2B2B'],['Championship','#E08A2B'],['League','#7A5AA8'],['Practice','#8A93A3'],['Holiday','#B23A2E']];
   h+=`<div class="cal-legend">`+legend.map(l=>`<span class="lg"><i style="background:${l[1]}"></i>${l[0]}</span>`).join('')+`</div>`;
+  const evRow = (e) => { const meta=[e.time, e.location].filter(Boolean).join(' · ');
+    return `<div class="cal-ev"><span class="bar" style="background:${e.color}"></span><span class="ev-t"><span class="ev-name">${esc(e.name)}</span>${meta?`<span class="ev-meta">${esc(meta)}</span>`:''}</span><span class="ev-tag" style="background:${e.color}">${esc(e.tag)}</span></div>`; };
+
+  // Today / selected-day section
   h+=`<div class="cal-detail">`;
   if(sel){
     const dd=hParseDate(sel), label=dd?dd.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'}):sel;
-    h+=`<div class="cd-date">${esc(label)}</div>`;
-    map[sel].forEach(e=>{
-      const meta=[e.time, e.location].filter(Boolean).join(' · ');
-      h+=`<div class="cal-ev"><span class="bar" style="background:${e.color}"></span><span class="ev-t"><span class="ev-name">${esc(e.name)}</span>${meta?`<span class="ev-meta">${esc(meta)}</span>`:''}</span><span class="ev-tag" style="background:${e.color}">${esc(e.tag)}</span></div>`;
-    });
+    h+=`<div class="cd-date">${sel===todayStr?'Today · ':''}${esc(label)}</div>`;
+    map[sel].forEach(e=>h+=evRow(e));
+  } else if(CAL_YM===todayYM){
+    h+=`<div class="cd-date">Today</div><div class="home-empty" style="margin:0">Nothing scheduled today.</div>`;
   } else {
     h+=`<div class="home-empty" style="margin:0">Tap a colored day to see what's on.</div>`;
   }
   h+=`</div>`;
+
+  // All events & important dates (meets + key dates; routine practices stay on the grid only)
+  const allEvents=[];
+  Object.keys(map).forEach(k=>{ map[k].forEach(e=>{ if(!/practice/i.test(e.type||'') && !/practice/i.test(e.tag||'')) allEvents.push(Object.assign({date:k}, e)); }); });
+  allEvents.sort((a,b)=> a.date<b.date?-1 : a.date>b.date?1 : 0);
+  if(allEvents.length){
+    h+=`<div class="home-h" style="margin-top:22px">All Events &amp; Dates</div><div class="cal-list">`;
+    allEvents.forEach(e=>{
+      const dd=hParseDate(e.date), ds=dd?dd.toLocaleDateString(undefined,{month:'short',day:'numeric'}):e.date;
+      const past = e.date < todayStr;
+      h+=`<button class="cal-li${past?' past':''}" data-cal-goto="${e.date}"><span class="li-dot" style="background:${e.color}"></span><span class="li-date">${esc(ds)}</span><span class="li-name">${esc(e.name)}${e.location?` <span class="li-loc">${esc(e.location)}</span>`:''}</span><span class="li-tag" style="color:${e.color}">${esc(e.tag)}</span></button>`;
+    });
+    h+=`</div>`;
+  }
   return h;
 }
 function renderPractice(){
@@ -2164,6 +2198,7 @@ function renderPractice(){
 $("#practiceContent").addEventListener("click",e=>{
   const mode=e.target.closest("[data-mode]"); if(mode){ PLAN_MODE=mode.dataset.mode; if(PLAN_MODE==='calendar'){ CAL_YM=null; CAL_SEL=null; } renderPractice(); return; }
   const nav=e.target.closest("[data-cal-nav]"); if(nav){ calNav(parseInt(nav.dataset.calNav,10)); return; }
+  const goto=e.target.closest("[data-cal-goto]"); if(goto){ const dk=goto.dataset.calGoto; CAL_YM=dk.slice(0,7); CAL_SEL=dk; renderPractice(); window.scrollTo({top:0,behavior:'smooth'}); return; }
   const day=e.target.closest("[data-cal-day]"); if(day){ CAL_SEL=(CAL_SEL===day.dataset.calDay)?null:day.dataset.calDay; renderPractice(); return; }
   const back=e.target.closest("[data-back]"); if(back){ OPEN_SESSION=null; renderPractice(); return; }
   const sess=e.target.closest("[data-sess]"); if(sess){ OPEN_SESSION=parseInt(sess.dataset.sess,10); renderPractice(); return; }
