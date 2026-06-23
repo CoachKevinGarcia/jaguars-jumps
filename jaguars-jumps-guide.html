@@ -2262,8 +2262,11 @@ $("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
   // 🔧 SETUP: after deploying the Google Apps Script, paste its Web App URL
   //    between the quotes below (replace the PASTE_... text).
   const LOGIN_BACKEND = "https://script.google.com/macros/s/AKfycbxF416UVvqT4JkOH2H09vQYALz2c2N_5vjTCQXEzHeU-a0LeERJOUnLob0FplgzBD4Q/exec";
-  const SESSION_HOURS = 12;     // how long a login lasts before re-prompting
+  const SESSION_HOURS = 12;     // hard cap on a login, even with activity
+  const IDLE_MIN = 15;          // 🔧 auto sign-out after this many minutes idle
+  const IDLE_MS = IDLE_MIN * 60 * 1000;
   const KEY = "jjg_session";
+  const AKEY = "jjg_active";    // last-activity timestamp (cheap to update)
 
   const gate = document.getElementById('loginGate');
   const form = document.getElementById('loginForm');
@@ -2274,7 +2277,10 @@ $("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
   const configured = LOGIN_BACKEND && !LOGIN_BACKEND.startsWith("PASTE_");
 
   const readSession = () => { try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch(e){ return null; } };
-  const validSession = () => { const s = readSession(); return s && s.exp > Date.now(); };
+  const lastActive = () => parseInt(localStorage.getItem(AKEY) || "0", 10);
+  const idleExceeded = () => { const a = lastActive(); return !a || (Date.now() - a > IDLE_MS); };
+  const touch = () => localStorage.setItem(AKEY, String(Date.now()));
+  const validSession = () => { const s = readSession(); return !!(s && s.exp > Date.now() && !idleExceeded()); };
   const saveSession = (name, admin, home, board, coach, plan, sessions, calendar) => localStorage.setItem(KEY, JSON.stringify({ name, admin: !!admin, home: home||null, board: board||null, coach: coach||null, plan: plan||null, sessions: sessions||null, calendar: calendar||null, exp: Date.now() + SESSION_HOURS*3600*1000 }));
 
   function showChip(name){
@@ -2285,6 +2291,7 @@ $("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
     gate.classList.add('hidden');
     gate.setAttribute('aria-hidden','true');
     document.body.classList.toggle('admin-mode', !!admin);
+    touch();
     showChip(name);
     MY_NAME = name; BOARD_DATA = board || null; COACH_DATA = coach || null; HOME_DATA = home || null; PLAN_DATA = plan || null; SESSIONS_DATA = sessions || null; CAL_DATA = calendar || null; OPEN_SESSION = null; CAL_YM = null; CAL_SEL = null;
     try { renderHome(home, name); } catch(e){}
@@ -2292,14 +2299,23 @@ $("#glSearch").addEventListener("input",e=>renderGlossary(e.target.value));
     try { renderPractice(); } catch(e){}
     if(admin){ try { renderCoach(); } catch(e){} switchView('coach'); }
   }
-  function signOut(){ localStorage.removeItem(KEY); location.reload(); }
+  function signOut(){ localStorage.removeItem(KEY); localStorage.removeItem(AKEY); location.reload(); }
 
   if(validSession()){
     const s = readSession();
     openApp(s.name, s.admin, s.home, s.board, s.coach, s.plan, s.sessions, s.calendar);
   } else {
+    if(readSession()) localStorage.removeItem(KEY);   // session expired or went idle — clear it
     setTimeout(() => fEl && fEl.focus(), 120);
   }
+
+  // ---- Idle auto sign-out ----
+  const loggedIn = () => gate.classList.contains('hidden');
+  let lastTouch = 0;
+  const onActivity = () => { const n = Date.now(); if(loggedIn() && n - lastTouch > 5000){ lastTouch = n; touch(); } };
+  ['pointerdown','keydown','scroll','touchstart'].forEach(ev => window.addEventListener(ev, onActivity, { passive: true }));
+  document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible' && loggedIn() && idleExceeded()) signOut(); });
+  setInterval(() => { if(loggedIn() && idleExceeded()) signOut(); }, 30000);
 
   form && form.addEventListener('submit', async (e) => {
     e.preventDefault();
